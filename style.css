@@ -1,0 +1,10 @@
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef2ee;--card:#fff;--ink:#181a26;--mut:#5f6578;--line:#d9dfd9;--acc:#4256f0;--accsoft:#e3e6ff;--sun:#f0b93a;--good:#1f8f5f;--bad:#c9473f;--rec:#16171f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1117;--card:#181b25;--ink:#eceef6;--mut:#9aa0b4;--line:#2a2e3d;--acc:#8a98ff;--accsoft:#242a52;--good:#4cc790;--bad:#ff7d73;--rec:#05060a}}
+:root[data-theme="dark"]{--bg:#0f1117;--card:#181b25;--ink:#eceef6;--mut:#9aa0b4;--line:#2a2e3d;--acc:#8a98ff;--accsoft:#242a52;--good:#4cc790;--bad:#ff7d73;--rec:#05060a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "DM Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;line-height:1.1;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
