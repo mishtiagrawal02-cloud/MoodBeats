@@ -17,3 +17,18 @@ nav button.on{background:var(--ink);color:var(--bg)}
 main{max-width:880px;margin:0 auto;padding:12px 20px 60px}
 .hero{padding:18px 0 10px}.hero h1{font-size:clamp(2rem,6vw,3.2rem);max-width:15ch}
 .hero p{color:var(--mut);max-width:58ch;margin:12px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:16px}
+.card h2{font-size:1.35rem;margin-bottom:14px}
+.lbl{display:flex;justify-content:space-between;font-weight:500;margin:16px 0 6px}
+.lbl output{font-weight:700;color:var(--acc)}
+.moods,.chips,.grid{display:flex;flex-wrap:wrap;gap:8px}
+.mood{font-size:1.7rem;width:54px;height:54px;border-radius:14px;border:2px solid var(--line);background:none}
+.mood.on{border-color:var(--acc);background:var(--accsoft)}
+.chip{padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:none}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.aud{flex:1 1 150px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:none}
+.aud b{display:block}.aud span{font-size:.82rem;color:var(--mut)}
+.aud.on{border-color:var(--acc);background:var(--accsoft)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:12px;padding:13px 22px;font-weight:700;margin-top:22px}
+.btn.alt{background:none;color:var(--ink);border:1.5px solid var(--line);margin-left:8px}
