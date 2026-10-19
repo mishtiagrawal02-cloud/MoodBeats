@@ -81,3 +81,32 @@ function togglePause(){S.paused=!S.paused;if(S.paused){if(AC)AC.suspend()}else i
 function finish(){clearInterval(tick);stopAudio();S.post={mood:S.pre.mood,stress:S.pre.stress,focus:S.pre.focus};S.step='post';S.view='session';S.elapsed=Math.max(1,Math.round((S.total-S.left)/60));render()}
 function saveSes(){const p=S.pre,x={id:Date.now(),ts:Date.now(),task:p.task,audio:p.audio,mins:S.elapsed,pre:{mood:p.mood,stress:p.stress,focus:p.focus},post:{...S.post}};
  SES.push(x);save();S.last=x;S.step='done';render()}
+function agg(list){const g={};AUDIO.forEach(a=>g[a.id]={n:0,focus:0,stress:0,mood:0});
+ list.forEach(x=>{const o=g[x.audio];o.n++;['focus','stress','mood'].forEach(k=>o[k]+=dl(x,k))});
+ AUDIO.forEach(a=>{const o=g[a.id];['focus','stress','mood'].forEach(k=>o[k]=o.n?o[k]/o.n:0)});return g}
+function chart(g,m){const rows=AUDIO.filter(a=>g[a.id].n);if(!rows.length)return '';
+ const mx=Math.max(1,...rows.map(a=>Math.abs(g[a.id][m]))),W=640,mid=330,H=rows.length*46+10;
+ return `<div class="scroll"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Average ${m} change by sound" style="width:100%;min-width:480px">
+ <line x1="${mid}" x2="${mid}" y1="0" y2="${H}" stroke="var(--line)"/>${rows.map((a,i)=>{const v=g[a.id][m],w=Math.abs(v)/mx*250,y=i*46+8;
+ return `<text x="0" y="${y+20}" fill="var(--ink)" font-size="14">${a.n} (${g[a.id].n})</text><rect x="${v>=0?mid:mid-w}" y="${y}" width="${Math.max(w,2)}" height="28" rx="6" fill="${v>=0?a.c:'var(--bad)'}" style="filter:drop-shadow(0 0 5px ${v>=0?a.c:'#c9473f'})"/>
+ <text x="${v>=0?mid+w+6:mid-w-6}" y="${y+20}" text-anchor="${v>=0?'start':'end'}" fill="var(--ink)" font-size="14" font-weight="700">${sg(v)}</text>`}).join('')}</svg></div>`}
+function vDash(){
+ const list=S.filter=='All'?SES:SES.filter(x=>x.task==S.filter);
+ const bar=`<div class="tools"><label for="flt">Task</label><select id="flt" onchange="S.filter=this.value;render()">${['All',...TASKS].map(t=>`<option ${S.filter==t?'selected':''}>${t}</option>`).join('')}</select>
+ <button class="chip" onclick="sample()">Load sample data</button><button class="chip" onclick="clearAll()">Clear all data</button></div>`;
+ if(!list.length)return `<div class="hero"><h1>Your dashboard</h1></div><div class="card">${bar}<div class="empty"><p>No sessions${S.filter!='All'?' for this task':''} yet.</p><button class="btn" onclick="go('session')">Start your first session</button></div></div>`;
+ const g=agg(list),mins=list.reduce((a,x)=>a+x.mins,0),M={focus:'Focus',stress:'Stress reduction',mood:'Mood'};
+ const c=AUDIO.filter(a=>g[a.id].n>=2).sort((a,b)=>g[b.id][S.metric]-g[a.id][S.metric]);
+ const ins=c.length?`<b>${an(c[0].id)}</b> has the highest average ${M[S.metric].toLowerCase()} change for you (${sg(g[c[0].id][S.metric])} across ${g[c[0].id].n} sessions).${c.length==1?' Try another sound to compare.':''}`:'Log at least 2 sessions with the same sound to see comparisons.';
+ const avg=k=>list.reduce((a,x)=>a+dl(x,k),0)/list.length;
+ return `<div class="hero"><h1>Your dashboard</h1></div><div class="card">${bar}
+ <div class="stats"><div class="stat"><b>${list.length}</b><span>sessions</span></div><div class="stat"><b>${mins}</b><span>minutes studied</span></div>
+ ${['focus','stress','mood'].map(k=>`<div class="stat"><b class="${cl(avg(k))}">${sg(avg(k))}</b><span>avg ${k=='stress'?'stress reduction':k+' change'}</span></div>`).join('')}</div></div>
+ <div class="card"><h2>Which sound works for you?</h2><div class="chips" role="group" aria-label="Metric" style="margin-bottom:14px">${Object.entries(M).map(([k,t])=>`<button class="chip ${S.metric==k?'on':''}" aria-pressed="${S.metric==k}" onclick="S.metric='${k}';render()">${t}</button>`).join('')}</div>
+ <p class="insight">${ins}</p>${chart(g,S.metric)}
+ <p class="small">Bars show the average change from before to after a session. Positive is better for every metric. Numbers in brackets are session counts. Small samples are noisy, and these results describe you only.</p></div>`}
+function sample(){const bias={lofi:[1.6,1,.6],instr:[1.2,.8,.5],nature:[.8,1.6,.8],freq:[.3,.2,0],none:[.5,0,0]},r=()=>Math.random()-.5;
+ const out=[];for(let i=0;i<20;i++){const a=AUDIO[i%5].id,b=bias[a],t=TASKS[Math.floor(Math.random()*6)],pf=3+Math.floor(Math.random()*4),ps=4+Math.floor(Math.random()*4),pm=2+Math.floor(Math.random()*2),cp=v=>Math.max(1,Math.min(10,Math.round(v)));
+  out.push({id:Date.now()+i,ts:Date.now()-(20-i)*86400000*1.2,task:t,audio:a,mins:[15,25,45][i%3],pre:{mood:pm,stress:ps,focus:pf},post:{mood:Math.max(1,Math.min(5,Math.round(pm+b[2]+r()*1.5))),stress:cp(ps-b[1]+r()*2),focus:cp(pf+b[0]+r()*2)}})}
+ SES=SES.concat(out);save();render()}
+function clearAll(){if(confirm('Delete all saved sessions? This cannot be undone.')){SES=[];save();render()}}
