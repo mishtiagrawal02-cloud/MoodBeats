@@ -110,3 +110,10 @@ function sample(){const bias={lofi:[1.6,1,.6],instr:[1.2,.8,.5],nature:[.8,1.6,.
   out.push({id:Date.now()+i,ts:Date.now()-(20-i)*86400000*1.2,task:t,audio:a,mins:[15,25,45][i%3],pre:{mood:pm,stress:ps,focus:pf},post:{mood:Math.max(1,Math.min(5,Math.round(pm+b[2]+r()*1.5))),stress:cp(ps-b[1]+r()*2),focus:cp(pf+b[0]+r()*2)}})}
  SES=SES.concat(out);save();render()}
 function clearAll(){if(confirm('Delete all saved sessions? This cannot be undone.')){SES=[];save();render()}}
+function vHist(){
+ if(!SES.length)return `<div class="hero"><h1>Session history</h1></div><div class="card"><div class="empty"><p>Nothing here yet. Finished sessions appear in this list.</p><button class="btn" onclick="go('session')">Start a session</button></div></div>`;
+ return `<div class="hero"><h1>Session history</h1></div><div class="card">${[...SES].reverse().map(x=>{const f=dl(x,'focus'),s=dl(x,'stress'),m=dl(x,'mood');
+ return `<div class="sess"><div><b>${an(x.audio)}</b> <span class="tag">${x.task}</span><span class="tag">${x.mins} min</span><div class="small">${new Date(x.ts).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})}</div></div>
+ <div class="small">Focus <b class="${cl(f)}">${sg(f)}</b> · Stress <b class="${cl(s)}">${sg(s)}</b> · Mood <b class="${cl(m)}">${sg(m)}</b> <button class="del" onclick="delS(${x.id})">Delete</button></div></div>`}).join('')}</div>`}
+function delS(id){SES=SES.filter(x=>x.id!=id);save();render()}
+render();
