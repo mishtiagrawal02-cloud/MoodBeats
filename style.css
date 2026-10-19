@@ -32,3 +32,13 @@ main{max-width:880px;margin:0 auto;padding:12px 20px 60px}
 input[type=range]{width:100%;accent-color:var(--acc)}
 .btn{background:var(--acc);color:#fff;border:0;border-radius:12px;padding:13px 22px;font-weight:700;margin-top:22px}
 .btn.alt{background:none;color:var(--ink);border:1.5px solid var(--line);margin-left:8px}
+.run{text-align:center}
+.disc{position:relative;width:min(300px,78vw);aspect-ratio:1;margin:8px auto 4px}
+.disc svg{width:100%;height:100%;display:block}
+.spin{transform-origin:150px 150px;animation:sp 3.2s linear infinite}
+.paused .spin{animation-play-state:paused}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.time{position:absolute;inset:0;display:grid;place-items:center;font:800 2.1rem "Bricolage Grotesque",sans-serif;color:#1a1a22;pointer-events:none}
+.sub{color:var(--mut);margin:4px 0 14px}
+.vol{max-width:260px;margin:0 auto;display:flex;align-items:center;gap:10px;color:var(--mut)}
