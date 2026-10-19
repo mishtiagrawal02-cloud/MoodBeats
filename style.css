@@ -8,3 +8,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "DM Sans"
 h1,h2,h3{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;line-height:1.1;margin:0}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:880px;margin:0 auto;padding:18px 20px 8px;flex-wrap:wrap}
+.logo{font:800 1.5rem "Bricolage Grotesque",sans-serif;display:flex;align-items:center;gap:8px}
+.logo i{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,var(--sun) 0 22%,var(--rec) 24% 100%);display:inline-block}
+nav{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+nav button{border:0;background:none;padding:7px 16px;border-radius:999px;color:var(--mut);font-weight:500}
+nav button.on{background:var(--ink);color:var(--bg)}
+main{max-width:880px;margin:0 auto;padding:12px 20px 60px}
+.hero{padding:18px 0 10px}.hero h1{font-size:clamp(2rem,6vw,3.2rem);max-width:15ch}
+.hero p{color:var(--mut);max-width:58ch;margin:12px 0 0}
