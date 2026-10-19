@@ -47,7 +47,10 @@ function stopAudio(){tms.forEach(clearInterval);tms=[];srcs.forEach(s=>{try{s.st
 function go(v){S.view=v;render()}
 function render(){
  ['session','dash','hist'].forEach(v=>{const b=$('n-'+v);b.className=S.view==v?'on':'';b.setAttribute('aria-current',S.view==v?'page':'false')});
- $('app').innerHTML=S.view=='session'?vSession():S.view=='dash'?vDash():vHist()}
+ $('app').innerHTML=S.view=='session'?vSession():S.view=='dash'?vDash():vHist();
+ // NEW: React ko batao ki app update hua
+ window.dispatchEvent(new CustomEvent('sb:render',{detail:{view:S.view,sessions:SES}}));
+}
 
 /* ---------- study flow ---------- */
 function sliders(o,k){return [['stress','Stress level (1 = calm, 10 = very stressed)'],['focus','Focus level (1 = scattered, 10 = locked in)']].map(([n,t])=>
