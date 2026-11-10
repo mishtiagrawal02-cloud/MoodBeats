@@ -1,0 +1,95 @@
+/* ============================================
+   MOODBEATS DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* ========== Color Palette ========== */
+  /* Primary Colors */
+  --obsidian: #09070D;
+  --charcoal: #15111D;
+  --electric-violet: #8B35FF;
+  --neon-purple: #BF5AFF;
+  --soft-lavender: #C9B4FF;
+  --muted-grey: #938B9E;
+  --white: #F7F3FF;
+  
+  /* Border & Effects */
+  --border: rgba(201, 180, 255, 0.16);
+  --glow: rgba(139, 53, 255, 0.25);
+  --gradient: linear-gradient(135deg, #8B35FF, #BF5AFF);
+  
+  /* Semantic Colors */
+  --good: #4cc790;
+  --bad: #ff7d73;
+  --warning: #ffc933;
+  
+  /* ========== Spacing Scale ========== */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  
+  /* ========== Border Radius ========== */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+  
+  /* ========== Typography ========== */
+  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-heading: "Bricolage Grotesque", "DM Sans", system-ui, sans-serif;
+  
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
+  --font-size-4xl: 2.5rem;    /* 40px */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  
+  /* ========== Layout ========== */
+  --sidebar-width: 250px;
+  --header-height: 80px;
+  --max-content-width: 1400px;
+  
+  /* ========== Transitions ========== */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* ========== Shadows ========== */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 20px var(--glow);
+  
+  /* ========== Z-Index Scale ========== */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+}
+
+/* ========== Responsive Breakpoints ========== */
+/* These are used in JavaScript and media queries */
+/* Mobile: < 640px */
+/* Tablet: 640px - 1024px */
+/* Desktop: > 1024px */
