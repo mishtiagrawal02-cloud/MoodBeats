@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import './styles/global.css';
 import './styles/components.css';
 import './styles/dashboard.css';
+import './styles/study.css';
 
 function App() {
   return (

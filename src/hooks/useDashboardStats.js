@@ -5,17 +5,25 @@ export function useDashboardStats(sessions, goal = 150) {
   return useMemo(() => {
     const list = Array.isArray(sessions) ? sessions : [];
 
+    // Filter for legitimate sessions with actual study time (>0 mins).
+    // Excludes abandoned sessions (never saved) and 0-minute immediate terminations,
+    // while preserving legitimate early-completed and naturally completed sessions.
+    const validSessions = list.filter((s) => (Number(s?.mins) || 0) > 0);
+
     // 1. Total Study Hours & Minutes
-    const totalMins = list.reduce((acc, s) => acc + (Number(s.mins) || 0), 0);
+    const totalMins = validSessions.reduce((acc, s) => acc + (Number(s?.mins) || 0), 0);
     const totalHours = (totalMins / 60).toFixed(1);
 
-    // 2. Completed Sessions
-    const completedSessions = list.length;
+    // 2. Completed Sessions (sessions with actual study time)
+    const completedSessions = validSessions.length;
 
-    // 3. Current Study Streak
+    // 3. Current Study Streak (requires actual study time > 0)
     let streak = 0;
-    if (list.length > 0) {
-      const daySet = new Set(list.map((s) => new Date(s.ts).toDateString()));
+    const studySessionsWithTime = validSessions.filter(
+      (s) => s?.ts && !isNaN(new Date(s.ts).getTime())
+    );
+    if (studySessionsWithTime.length > 0) {
+      const daySet = new Set(studySessionsWithTime.map((s) => new Date(s.ts).toDateString()));
       const d = new Date();
       // If user hasn't studied yet today, check yesterday to keep active streak
       if (!daySet.has(d.toDateString())) {
@@ -29,8 +37,8 @@ export function useDashboardStats(sessions, goal = 150) {
 
     // 4. Weekly Goal Progress (Past 7 rolling days)
     const weekAgo = Date.now() - 7 * 864e5;
-    const weekSessions = list.filter((s) => s.ts >= weekAgo);
-    const weekMins = weekSessions.reduce((acc, s) => acc + (Number(s.mins) || 0), 0);
+    const weekSessions = validSessions.filter((s) => (s?.ts || 0) >= weekAgo);
+    const weekMins = weekSessions.reduce((acc, s) => acc + (Number(s?.mins) || 0), 0);
     const goalMinutes = Math.max(1, Number(goal) || 150);
     const goalPercent = Math.min(100, Math.round((weekMins / goalMinutes) * 100));
 
@@ -43,8 +51,10 @@ export function useDashboardStats(sessions, goal = 150) {
       const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'short' });
       const dayMonth = dayDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
 
-      const daySessions = list.filter((s) => new Date(s.ts).toDateString() === dayDateString);
-      const dayMinutes = daySessions.reduce((acc, s) => acc + (Number(s.mins) || 0), 0);
+      const daySessions = validSessions.filter(
+        (s) => s?.ts && !isNaN(new Date(s.ts).getTime()) && new Date(s.ts).toDateString() === dayDateString
+      );
+      const dayMinutes = daySessions.reduce((acc, s) => acc + (Number(s?.mins) || 0), 0);
       
       let avgFocusDelta = 0;
       if (daySessions.length > 0) {
@@ -64,12 +74,12 @@ export function useDashboardStats(sessions, goal = 150) {
       });
     }
 
-    // 6. Recent study sessions (top 4, newest first)
-    const sortedSessions = [...list].sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    // 6. Recent study sessions (top 4 legitimate study sessions, newest first)
+    const sortedSessions = [...validSessions].sort((a, b) => (b?.ts || 0) - (a?.ts || 0));
     const recentSessions = sortedSessions.slice(0, 4);
 
     // 7. Personal Insights
-    // Latest recorded mood
+    // Latest recorded mood from genuine study sessions
     let latestMood = null;
     if (sortedSessions.length > 0) {
       const latest = sortedSessions[0];
@@ -82,34 +92,34 @@ export function useDashboardStats(sessions, goal = 150) {
       };
     }
 
-    // Averages across recent/all sessions
+    // Averages across legitimate study sessions
     let avgFocusDeltaAll = 0;
     let avgStressReductionAll = 0;
     let avgMoodDeltaAll = 0;
 
-    if (list.length > 0) {
-      const focusSum = list.reduce(
+    if (validSessions.length > 0) {
+      const focusSum = validSessions.reduce(
         (acc, s) => acc + ((s.post?.focus ?? 5) - (s.pre?.focus ?? 5)),
         0
       );
-      const stressSum = list.reduce(
+      const stressSum = validSessions.reduce(
         (acc, s) => acc + ((s.pre?.stress ?? 5) - (s.post?.stress ?? 5)),
         0
       );
-      const moodSum = list.reduce(
+      const moodSum = validSessions.reduce(
         (acc, s) => acc + ((s.post?.mood ?? 3) - (s.pre?.mood ?? 3)),
         0
       );
 
-      avgFocusDeltaAll = Math.round((focusSum / list.length) * 10) / 10;
-      avgStressReductionAll = Math.round((stressSum / list.length) * 10) / 10;
-      avgMoodDeltaAll = Math.round((moodSum / list.length) * 10) / 10;
+      avgFocusDeltaAll = Math.round((focusSum / validSessions.length) * 10) / 10;
+      avgStressReductionAll = Math.round((stressSum / validSessions.length) * 10) / 10;
+      avgMoodDeltaAll = Math.round((moodSum / validSessions.length) * 10) / 10;
     }
 
     // Most effective audio environment
     let topAudio = null;
     const audioStats = {};
-    list.forEach((s) => {
+    validSessions.forEach((s) => {
       if (!s.audio) return;
       if (!audioStats[s.audio]) {
         audioStats[s.audio] = { totalFocusDelta: 0, count: 0 };

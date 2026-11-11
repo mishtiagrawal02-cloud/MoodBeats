@@ -2,7 +2,6 @@ function PersonalInsightsSection({ stats }) {
   const {
     avgFocusDelta = 0,
     avgStressReduction = 0,
-    avgMoodDelta = 0,
     topAudio = null,
     latestMood = null,
     completedSessions = 0
@@ -10,7 +9,6 @@ function PersonalInsightsSection({ stats }) {
 
   const focusSign = avgFocusDelta > 0 ? `+${avgFocusDelta}` : `${avgFocusDelta}`;
   const stressSign = avgStressReduction > 0 ? `+${avgStressReduction}` : `${avgStressReduction}`;
-  const moodSign = avgMoodDelta > 0 ? `+${avgMoodDelta}` : `${avgMoodDelta}`;
 
   const hasData = completedSessions > 0;
 
