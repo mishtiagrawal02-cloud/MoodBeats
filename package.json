@@ -1,0 +1,41 @@
+{
+  "name": "moodbeats",
+  "version": "2.0.0",
+  "description": "MoodBeats - Your music. Your mood. Your focus. A premium study productivity platform.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext js,jsx"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mishtiagrawal02-cloud/MoodBeats.git"
+  },
+  "keywords": [
+    "study",
+    "productivity",
+    "focus",
+    "music",
+    "mood-tracking"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mishtiagrawal02-cloud/MoodBeats/issues"
+  },
+  "homepage": "https://github.com/mishtiagrawal02-cloud/MoodBeats#readme",
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "eslint": "^10.14.0",
+    "prettier": "^3.9.10",
+    "vite": "^8.3.7"
+  }
+}
