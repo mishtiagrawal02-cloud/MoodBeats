@@ -9,6 +9,7 @@ import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
 import './styles/global.css';
 import './styles/components.css';
+import './styles/dashboard.css';
 
 function App() {
   return (
