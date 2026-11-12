@@ -11,6 +11,7 @@ import './styles/global.css';
 import './styles/components.css';
 import './styles/dashboard.css';
 import './styles/study.css';
+import './styles/analytics.css';
 
 function App() {
   return (

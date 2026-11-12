@@ -1,110 +1,142 @@
 import { useNavigate } from 'react-router-dom';
-import { getAudioName, getAudioIcon, MOODS } from '../../utils/constants';
+import Card from '../shared/Card';
+import Button from '../shared/Button';
+import useStudyStore from '../../store/useStudyStore';
 
-function SessionCompleteCard({ receipt, onNewSession }) {
+function SessionCompleteCard() {
   const navigate = useNavigate();
-
-  if (!receipt) return null;
-
-  const { task, audio, mins, pre, post, taskCompletion, notes } = receipt;
-
-  const focusDelta = (post?.focus ?? 5) - (pre?.focus ?? 5);
-  const stressDelta = (pre?.stress ?? 5) - (post?.stress ?? 5);
-  const moodDelta = (post?.mood ?? 3) - (pre?.mood ?? 3);
-
-  const focusClass = focusDelta > 0 ? 'metric-pos' : focusDelta < 0 ? 'metric-neg' : 'metric-neutral';
-  const stressClass = stressDelta > 0 ? 'metric-pos' : stressDelta < 0 ? 'metric-neg' : 'metric-neutral';
-  const moodClass = moodDelta > 0 ? 'metric-pos' : moodDelta < 0 ? 'metric-neg' : 'metric-neutral';
-
+  const { activeSession, resetSession } = useStudyStore();
+  
+  const handleStartNewSession = () => {
+    resetSession();
+  };
+  
+  const handleViewDashboard = () => {
+    resetSession();
+    navigate('/');
+  };
+  
+  const handleViewAnalytics = () => {
+    resetSession();
+    navigate('/analytics');
+  };
+  
+  if (!activeSession) return null;
+  
+  const formatDuration = () => {
+    const mins = Math.floor(activeSession.duration || 0);
+    return `${mins} minutes`;
+  };
+  
+  const getMoodChange = () => {
+    if (activeSession.moodAfter === undefined || activeSession.moodBefore === undefined) {
+      return 0;
+    }
+    return activeSession.moodAfter - activeSession.moodBefore;
+  };
+  
+  const getStressChange = () => {
+    if (activeSession.stressAfter === undefined || activeSession.stressBefore === undefined) {
+      return 0;
+    }
+    return activeSession.stressBefore - activeSession.stressAfter; // Lower stress is positive
+  };
+  
+  const getFocusChange = () => {
+    if (activeSession.focusAfter === undefined || activeSession.focusBefore === undefined) {
+      return 0;
+    }
+    return activeSession.focusAfter - activeSession.focusBefore;
+  };
+  
+  const renderMetricChange = (label, change, emoji) => {
+    const isPositive = change > 0;
+    const isNeutral = change === 0;
+    
+    return (
+      <div className="metric-change-item">
+        <div className="metric-label">{label} {emoji}</div>
+        <div className={`metric-change ${isPositive ? 'positive' : isNeutral ? 'neutral' : 'negative'}`}>
+          {isNeutral ? '=' : isPositive ? '↑' : '↓'} {Math.abs(change)}
+        </div>
+      </div>
+    );
+  };
+  
   return (
-    <div className="study-card-wrapper complete-celebration-card">
-      <div className="celebration-badge">
-        <i className="fas fa-check"></i>
+    <div className="session-complete">
+      <div className="complete-header">
+        <div className="complete-icon">✨</div>
+        <h1>Session Complete!</h1>
+        <p className="subtitle">Great job staying focused</p>
       </div>
-
-      <h2 className="celebration-title">Study Session Saved!</h2>
-      <p className="celebration-subtitle">
-        Your focus stats, daily streak, and weekly goal progress have been updated.
-      </p>
-
-      {/* Overview Pill */}
-      <div className="receipt-pill-row">
-        <span className="receipt-pill">
-          <i className="fas fa-book-open"></i> {task}
-        </span>
-        <span className="receipt-pill">
-          <i className="far fa-clock"></i> {mins} minutes
-        </span>
-        <span className="receipt-pill">
-          <span>{getAudioIcon(audio)}</span> {getAudioName(audio)}
-        </span>
-        <span className="receipt-pill completion-tag">
-          <i className="fas fa-circle-check"></i> {taskCompletion?.replace('_', ' ')}
-        </span>
-      </div>
-
-      {/* Delta Metric Cards */}
-      <div className="celebration-metrics-grid">
-        <div className="delta-stat-card">
-          <div className="delta-stat-icon">
-            <i className="fas fa-brain"></i>
+      
+      {/* Session Summary */}
+      <Card className="summary-card">
+        <h3 className="card-title">Session Summary</h3>
+        
+        <div className="summary-stats">
+          <div className="summary-stat-item">
+            <div className="stat-label">Duration</div>
+            <div className="stat-value">{formatDuration()}</div>
           </div>
-          <span className={`delta-stat-value ${focusClass}`}>
-            {focusDelta > 0 ? `+${focusDelta}` : focusDelta} pts
-          </span>
-          <span className="delta-stat-label">Focus Shift</span>
-          <span className="delta-stat-sub">From {pre?.focus} to {post?.focus}</span>
-        </div>
-
-        <div className="delta-stat-card">
-          <div className="delta-stat-icon">
-            <i className="fas fa-heart-pulse"></i>
+          
+          <div className="summary-stat-item">
+            <div className="stat-label">Task</div>
+            <div className="stat-value">{activeSession.taskDescription || 'N/A'}</div>
           </div>
-          <span className={`delta-stat-value ${stressClass}`}>
-            {stressDelta > 0 ? `-${stressDelta}` : stressDelta < 0 ? `+${Math.abs(stressDelta)}` : '0'} pts
-          </span>
-          <span className="delta-stat-label">Stress Relief</span>
-          <span className="delta-stat-sub">From {pre?.stress} to {post?.stress}</span>
-        </div>
-
-        <div className="delta-stat-card">
-          <div className="delta-stat-icon">
-            <i className="fas fa-face-smile"></i>
+          
+          <div className="summary-stat-item">
+            <div className="stat-label">Environment</div>
+            <div className="stat-value">
+              {activeSession.environment?.icon} {activeSession.environment?.name || 'N/A'}
+            </div>
           </div>
-          <span className={`delta-stat-value ${moodClass}`}>
-            {MOODS[(post?.mood ?? 3) - 1] || '🙂'} {moodDelta > 0 ? `+${moodDelta}` : moodDelta === 0 ? 'steady' : moodDelta}
-          </span>
-          <span className="delta-stat-label">Mood Change</span>
-          <span className="delta-stat-sub">From {MOODS[(pre?.mood ?? 3) - 1]} to {MOODS[(post?.mood ?? 3) - 1]}</span>
+          
+          <div className="summary-stat-item">
+            <div className="stat-label">Productivity</div>
+            <div className="stat-value">{activeSession.productive || 'N/A'}/10</div>
+          </div>
         </div>
-      </div>
-
-      {notes && (
-        <div className="receipt-notes-card">
-          <span className="notes-heading"><i className="far fa-note-sticky"></i> Session Notes:</span>
-          <p className="notes-body">{notes}</p>
+      </Card>
+      
+      {/* Before/After Comparison */}
+      <Card className="comparison-card">
+        <h3 className="card-title">How You Changed</h3>
+        
+        <div className="metrics-comparison">
+          {renderMetricChange('Mood', getMoodChange(), '😊')}
+          {renderMetricChange('Stress', getStressChange(), '😌')}
+          {renderMetricChange('Focus', getFocusChange(), '🎯')}
         </div>
-      )}
-
+        
+        {activeSession.notes && (
+          <div className="session-notes">
+            <h4>Your Notes</h4>
+            <p>{activeSession.notes}</p>
+          </div>
+        )}
+      </Card>
+      
       {/* Action Buttons */}
-      <div className="celebration-actions">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => navigate('/dashboard')}
+      <div className="complete-actions">
+        <Button
+          variant="primary"
+          size="large"
+          onClick={handleStartNewSession}
+          fullWidth
         >
-          <i className="fas fa-th-large"></i>
-          <span>View on Dashboard</span>
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={onNewSession}
-        >
-          <i className="fas fa-plus"></i>
-          <span>Start Another Session</span>
-        </button>
+          Start New Session
+        </Button>
+        
+        <div className="secondary-actions">
+          <Button variant="secondary" onClick={handleViewDashboard}>
+            View Dashboard
+          </Button>
+          <Button variant="secondary" onClick={handleViewAnalytics}>
+            View Analytics
+          </Button>
+        </div>
       </div>
     </div>
   );
