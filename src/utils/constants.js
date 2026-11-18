@@ -7,55 +7,19 @@
  * NOTE: These are NOT actual audio files or recordings
  */
 export const AUDIO = [
-  { 
-    id: 'lofi', 
-    c: '#BF5AFF', 
-    n: 'Lo-fi', 
-    d: 'Synthesized mellow tones', 
-    icon: '🎵',
-    type: 'synthetic'
-  },
-  { 
-    id: 'instr', 
-    c: '#8B35FF', 
-    n: 'Instrumental', 
-    d: 'Generated soft arpeggios', 
-    icon: '🎹',
-    type: 'synthetic'
-  },
-  { 
-    id: 'nature', 
-    c: '#8B35FF', // Changed from green to purple
-    n: 'Nature', 
-    d: 'Synthesized ambient sounds', 
-    icon: '🌿',
-    type: 'synthetic'
-  },
-  { 
-    id: 'freq', 
-    c: '#BF5AFF', 
-    n: 'Frequency', 
-    d: 'Generated tone patterns', 
-    icon: '🎧',
-    type: 'synthetic'
-  },
-  { 
-    id: 'ambient', 
-    c: '#C9B4FF', // Soft lavender
-    n: 'Ambient', 
-    d: 'Atmospheric generated sounds', 
-    icon: '🌌',
-    type: 'synthetic'
-  },
-  { 
-    id: 'none', 
-    c: '#938B9E', 
-    n: 'Silence', 
-    d: 'No audio, pure focus', 
-    icon: '🔇',
-    type: 'none'
-  }
+  { id: 'lofi', category: 'Music', c: 'var(--workspace-amber)', n: 'Lo-fi', d: 'Warm chords with soft vinyl texture.', icon: '🎵', glyph: 'fa-music', type: 'synthetic' },
+  { id: 'instr', category: 'Music', c: 'var(--workspace-chart-after)', n: 'Instrumental', d: 'Soft arpeggios over gentle sustained chords.', icon: '🎹', glyph: 'fa-sliders', type: 'synthetic' },
+  { id: 'nature', category: 'Nature textures', c: 'var(--workspace-chart-deep)', n: 'Nature', d: 'Synthesized rain and wind.', icon: '🌿', glyph: 'fa-leaf', type: 'synthetic' },
+  { id: 'freq', category: 'Steady tones', c: 'var(--workspace-chart-sky)', n: 'Frequency', d: 'Steady tones with a subtle pulse.', icon: '🎧', glyph: 'fa-wave-square', type: 'synthetic' },
+  { id: 'ambient', category: 'Atmospheric', c: 'var(--workspace-chart-sand)', n: 'Ambient', d: 'Slow, atmospheric chords and a soft drone.', icon: '🌌', glyph: 'fa-cloud-moon', type: 'synthetic' },
+  { id: 'none', category: 'Quiet', c: 'var(--workspace-chart-before)', n: 'Silence', d: 'Study with the timer and no soundscape.', icon: '🔇', glyph: 'fa-volume-xmark', type: 'none' }
 ];
+
+/**
+ * Study room background scene ids (art registry lives in studyScenes.js,
+ * which imports the image assets and must stay out of node-test reach).
+ */
+export const STUDY_SCENE_IDS = ['night', 'sakura', 'sunny'];
 
 /**
  * Study task types
@@ -73,6 +37,12 @@ export const TASKS = [
  * Mood ratings (1-5 scale)
  */
 export const MOODS = ['😞', '😕', '😐', '🙂', '😄'];
+export const MOOD_LABELS = ['Very low', 'Low', 'Neutral', 'Good', 'Excellent'];
+export const TASK_COMPLETION_LABELS = {
+  completed: 'Completed',
+  partial: 'Partially completed',
+  not_completed: 'Not completed'
+};
 
 /**
  * LocalStorage keys - MUST match existing implementation
@@ -98,4 +68,5 @@ export const CURRENT_SCHEMA_VERSION = 2;
  */
 export const getAudioName = (id) => AUDIO.find(a => a.id === id)?.n || 'Unknown';
 export const getAudioIcon = (id) => AUDIO.find(a => a.id === id)?.icon || '🎵';
-export const getAudioColor = (id) => AUDIO.find(a => a.id === id)?.c || '#8B35FF';
+export const getAudioColor = (id) => AUDIO.find(a => a.id === id)?.c || 'var(--workspace-rose)';
+export const getAudioGlyph = (id) => AUDIO.find(a => a.id === id)?.glyph || 'fa-music';

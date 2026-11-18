@@ -155,8 +155,14 @@ export function filterSessionsByRange(sessions, range = DATE_RANGES.WEEK, refere
   const startCurrent = referenceTime - rangeMs;
   const startPrevious = referenceTime - rangeMs * 2;
 
-  const currentSessions = validList.filter((s) => s.ts >= startCurrent && s.ts <= referenceTime);
-  const previousSessions = validList.filter((s) => s.ts >= startPrevious && s.ts < startCurrent);
+  const currentSessions = validList.filter((s) => {
+    const time = new Date(s.ts).getTime();
+    return time >= startCurrent && time <= referenceTime;
+  });
+  const previousSessions = validList.filter((s) => {
+    const time = new Date(s.ts).getTime();
+    return time >= startPrevious && time < startCurrent;
+  });
 
   return {
     currentSessions,
@@ -235,6 +241,13 @@ export function calculateOverviewStats(currentSessions, previousSessions = []) {
     ? Math.round((focusDiffs.reduce((a, b) => a + b, 0) / focusDiffs.length) * 10) / 10
     : null;
 
+  const moodDiffs = getMoodCheckInSessions(currentSessions)
+    .filter((s) => isMoodRating(s.pre?.mood) && isMoodRating(s.post?.mood))
+    .map((s) => s.post.mood - s.pre.mood);
+  const avgMoodChange = moodDiffs.length
+    ? Math.round(moodDiffs.reduce((a, b) => a + b, 0) * 10 / moodDiffs.length) / 10
+    : null;
+
   // Comparison Indicators (actual differences, never invented percentages)
   let diffTimeMinutes = null;
   let diffSessions = null;
@@ -250,6 +263,7 @@ export function calculateOverviewStats(currentSessions, previousSessions = []) {
     avgFocus,
     avgStressReduction,
     avgFocusImprovement,
+    avgMoodChange,
     diffTimeMinutes,
     diffSessions,
     hasPriorPeriod: Boolean(previousSessions && previousSessions.length > 0)
@@ -583,7 +597,7 @@ export function calculateStudyConsistency(sessions, _range = DATE_RANGES.WEEK) {
 export function calculateAudioAnalysis(sessions) {
   const prod = getProductiveSessions(sessions);
 
-  const envMap = {};
+  const envMap = Object.create(null);
   AUDIO.forEach((a) => {
     envMap[a.id] = {
       id: a.id,
@@ -605,7 +619,7 @@ export function calculateAudioAnalysis(sessions) {
         id: audioId,
         name: audioId,
         icon: '🎵',
-        color: '#8B35FF',
+        color: 'var(--workspace-chart-after)',
         sessionCount: 0,
         totalMinutes: 0,
         focusDeltas: [],
@@ -651,7 +665,9 @@ export function calculateAudioAnalysis(sessions) {
     .sort((a, b) => b.totalMinutes - a.totalMinutes);
 
   // Identify most frequently used
-  const mostUsed = environmentList.length > 0 ? environmentList[0] : null;
+  const mostUsed = [...environmentList].sort((a, b) =>
+    b.sessionCount - a.sessionCount || b.totalMinutes - a.totalMinutes
+  )[0] ?? null;
 
   // Identify environment associated with best focus (only consider N >= 2)
   const qualifiedForFocus = environmentList.filter((e) => e.sessionCount >= 2 && e.avgFocusChange !== null);
@@ -673,7 +689,7 @@ export function calculateAudioAnalysis(sessions) {
 export function calculateTaskDistribution(sessions) {
   const prod = getProductiveSessions(sessions);
 
-  const taskMap = {};
+  const taskMap = Object.create(null);
 
   prod.forEach((s) => {
     const taskName = recordedTaskName(s.task);
@@ -946,4 +962,39 @@ export function generatePersonalInsights(sessions, range = DATE_RANGES.WEEK) {
   }
 
   return insights;
+}
+
+export function calculateActivitySeries(sessions, interval = 'day') {
+  const buckets = new Map();
+
+  for (const session of getProductiveSessions(sessions)) {
+    const date = new Date(session.ts);
+    date.setHours(0, 0, 0, 0);
+    if (interval === 'week') date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+    if (interval === 'month') date.setDate(1);
+
+    const timestamp = date.getTime();
+    const bucket = buckets.get(timestamp) || {
+      timestamp, minutes: 0, sessions: 0, focus: [], stress: []
+    };
+    bucket.minutes += Number(session.mins);
+    bucket.sessions += 1;
+    if (isScaleRating(session.post?.focus)) bucket.focus.push(session.post.focus);
+    if (isScaleRating(session.post?.stress)) bucket.stress.push(session.post.stress);
+    buckets.set(timestamp, bucket);
+  }
+
+  const average = (values) => values.length
+    ? Math.round(values.reduce((sum, value) => sum + value, 0) * 10 / values.length) / 10
+    : null;
+
+  return [...buckets.values()]
+    .sort((first, second) => first.timestamp - second.timestamp)
+    .map(({ timestamp, minutes, sessions: count, focus, stress }) => ({
+      timestamp,
+      minutes,
+      sessions: count,
+      focus: average(focus),
+      stress: average(stress)
+    }));
 }

@@ -1,144 +1,194 @@
 import { useNavigate } from 'react-router-dom';
-import Card from '../shared/Card';
-import Button from '../shared/Button';
-import useStudyStore from '../../store/useStudyStore';
+import { motion } from 'framer-motion';
+import { getAudioName, getAudioGlyph, MOODS } from '../../utils/constants';
+import { formatDurationLabel } from '../../utils/studyFormatting';
+import {
+  badgeEntry,
+  staggerContainer,
+  staggerItem,
+  proceedButton
+} from '../../utils/motionVariants';
 
-function SessionCompleteCard() {
+function SessionCompleteCard({ receipt, onNewSession }) {
   const navigate = useNavigate();
-  const { activeSession, resetSession } = useStudyStore();
-  
-  const handleStartNewSession = () => {
-    resetSession();
-  };
-  
-  const handleViewDashboard = () => {
-    resetSession();
-    navigate('/');
-  };
-  
-  const handleViewAnalytics = () => {
-    resetSession();
-    navigate('/analytics');
-  };
-  
-  if (!activeSession) return null;
-  
-  const formatDuration = () => {
-    const mins = Math.floor(activeSession.duration || 0);
-    return `${mins} minutes`;
-  };
-  
-  const getMoodChange = () => {
-    if (activeSession.moodAfter === undefined || activeSession.moodBefore === undefined) {
-      return 0;
-    }
-    return activeSession.moodAfter - activeSession.moodBefore;
-  };
-  
-  const getStressChange = () => {
-    if (activeSession.stressAfter === undefined || activeSession.stressBefore === undefined) {
-      return 0;
-    }
-    return activeSession.stressBefore - activeSession.stressAfter; // Lower stress is positive
-  };
-  
-  const getFocusChange = () => {
-    if (activeSession.focusAfter === undefined || activeSession.focusBefore === undefined) {
-      return 0;
-    }
-    return activeSession.focusAfter - activeSession.focusBefore;
-  };
-  
-  const renderMetricChange = (label, change, emoji) => {
-    const isPositive = change > 0;
-    const isNeutral = change === 0;
-    
-    return (
-      <div className="metric-change-item">
-        <div className="metric-label">{label} {emoji}</div>
-        <div className={`metric-change ${isPositive ? 'positive' : isNeutral ? 'neutral' : 'negative'}`}>
-          {isNeutral ? '=' : isPositive ? '↑' : '↓'} {Math.abs(change)}
-        </div>
-      </div>
-    );
-  };
-  
+
+  if (!receipt) return null;
+
+  const { task, audio, mins, pre, post, taskCompletion, notes } = receipt;
+
+  // Calculate deltas only when both values are present
+  const focusDelta = (typeof post?.focus === 'number' && typeof pre?.focus === 'number')
+    ? post.focus - pre.focus
+    : null;
+  const stressDelta = (typeof pre?.stress === 'number' && typeof post?.stress === 'number')
+    ? pre.stress - post.stress
+    : null;
+  const moodDelta = (typeof post?.mood === 'number' && typeof pre?.mood === 'number')
+    ? post.mood - pre.mood
+    : null;
+
+  const focusClass = focusDelta === null ? 'metric-neutral' : focusDelta > 0 ? 'metric-pos' : focusDelta < 0 ? 'metric-neg' : 'metric-neutral';
+  const stressClass = stressDelta === null ? 'metric-neutral' : stressDelta > 0 ? 'metric-pos' : stressDelta < 0 ? 'metric-neg' : 'metric-neutral';
+  const moodClass = moodDelta === null ? 'metric-neutral' : moodDelta > 0 ? 'metric-pos' : moodDelta < 0 ? 'metric-neg' : 'metric-neutral';
+
   return (
-    <div className="session-complete">
-      <div className="complete-header">
-        <div className="complete-icon">✨</div>
-        <h1>Session Complete!</h1>
-        <p className="subtitle">Great job staying focused</p>
-      </div>
-      
-      {/* Session Summary */}
-      <Card className="summary-card">
-        <h3 className="card-title">Session Summary</h3>
-        
-        <div className="summary-stats">
-          <div className="summary-stat-item">
-            <div className="stat-label">Duration</div>
-            <div className="stat-value">{formatDuration()}</div>
+    <motion.div
+      className="study-card-wrapper complete-celebration-card"
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+    >
+      <motion.div
+        className="celebration-badge"
+        variants={badgeEntry}
+        initial="hidden"
+        animate="visible"
+      >
+        <i className="fas fa-check"></i>
+      </motion.div>
+
+      <motion.h2
+        className="celebration-title"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+      >
+        Study Session Saved!
+      </motion.h2>
+      <motion.p
+        className="celebration-subtitle"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.3 }}
+      >
+        Your focus stats, daily streak, and weekly goal progress have been updated.
+      </motion.p>
+
+      {/* Overview Pill */}
+      <motion.div
+        className="receipt-pill-row"
+        variants={staggerContainer(0.05, 0.2)}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.span className="receipt-pill" variants={staggerItem}>
+          <i className="fas fa-book-open"></i> {task}
+        </motion.span>
+        <motion.span className="receipt-pill" variants={staggerItem}>
+          <i className="far fa-clock"></i> {formatDurationLabel(mins)}
+        </motion.span>
+        <motion.span className="receipt-pill" variants={staggerItem}>
+          <i className={`fas ${getAudioGlyph(audio)}`} aria-hidden="true" /> {getAudioName(audio)}
+        </motion.span>
+        <motion.span className="receipt-pill completion-tag" variants={staggerItem}>
+          <i className="fas fa-circle-check"></i> {taskCompletion ? taskCompletion.replace('_', ' ') : 'Not specified'}
+        </motion.span>
+      </motion.div>
+
+      {/* Delta Metric Cards */}
+      <motion.div
+        className="celebration-metrics-grid"
+        variants={staggerContainer(0.08, 0.3)}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div className="delta-stat-card" variants={staggerItem}>
+          <div className="delta-stat-icon">
+            <i className="fas fa-brain"></i>
           </div>
-          
-          <div className="summary-stat-item">
-            <div className="stat-label">Task</div>
-            <div className="stat-value">{activeSession.taskDescription || 'N/A'}</div>
+          <span className={`delta-stat-value ${focusClass}`}>
+            {focusDelta === null ? 'Not recorded' : focusDelta > 0 ? `+${focusDelta} pts` : focusDelta === 0 ? '0 pts' : `${focusDelta} pts`}
+          </span>
+          <span className="delta-stat-label">Focus Shift</span>
+          <span className="delta-stat-sub">
+            {typeof pre?.focus === 'number' && typeof post?.focus === 'number'
+              ? `From ${pre.focus} to ${post.focus}`
+              : 'Not recorded'}
+          </span>
+        </motion.div>
+
+        <motion.div className="delta-stat-card" variants={staggerItem}>
+          <div className="delta-stat-icon">
+            <i className="fas fa-heart-pulse"></i>
           </div>
-          
-          <div className="summary-stat-item">
-            <div className="stat-label">Environment</div>
-            <div className="stat-value">
-              {activeSession.environment?.icon} {activeSession.environment?.name || 'N/A'}
-            </div>
+          <span className={`delta-stat-value ${stressClass}`}>
+            {stressDelta === null ? 'Not recorded' : stressDelta > 0 ? `+${stressDelta} pts` : stressDelta === 0 ? '0 pts' : `${stressDelta} pts`}
+          </span>
+          <span className="delta-stat-label">Stress Relief</span>
+          <span className="delta-stat-sub">
+            {typeof pre?.stress === 'number' && typeof post?.stress === 'number'
+              ? `From ${pre.stress} to ${post.stress}`
+              : 'Not recorded'}
+          </span>
+        </motion.div>
+
+        <motion.div className="delta-stat-card" variants={staggerItem}>
+          <div className="delta-stat-icon">
+            <i className="fas fa-face-smile"></i>
           </div>
-          
-          <div className="summary-stat-item">
-            <div className="stat-label">Productivity</div>
-            <div className="stat-value">{activeSession.productive || 'N/A'}/10</div>
-          </div>
-        </div>
-      </Card>
-      
-      {/* Before/After Comparison */}
-      <Card className="comparison-card">
-        <h3 className="card-title">How You Changed</h3>
-        
-        <div className="metrics-comparison">
-          {renderMetricChange('Mood', getMoodChange(), '😊')}
-          {renderMetricChange('Stress', getStressChange(), '😌')}
-          {renderMetricChange('Focus', getFocusChange(), '🎯')}
-        </div>
-        
-        {activeSession.notes && (
-          <div className="session-notes">
-            <h4>Your Notes</h4>
-            <p>{activeSession.notes}</p>
-          </div>
-        )}
-      </Card>
-      
-      {/* Action Buttons */}
-      <div className="complete-actions">
-        <Button
-          variant="primary"
-          size="large"
-          onClick={handleStartNewSession}
-          fullWidth
+          <span className={`delta-stat-value ${moodClass}`}>
+            {moodDelta === null
+              ? 'Not recorded'
+              : `${MOODS[(post?.mood ?? 3) - 1] || '🙂'} ${moodDelta > 0 ? `+${moodDelta}` : moodDelta === 0 ? 'steady' : moodDelta}`}
+          </span>
+          <span className="delta-stat-label">Mood Change</span>
+          <span className="delta-stat-sub">
+            {typeof pre?.mood === 'number' && typeof post?.mood === 'number'
+              ? `From ${MOODS[(pre.mood ?? 3) - 1]} to ${MOODS[(post.mood ?? 3) - 1]}`
+              : 'Not recorded'}
+          </span>
+        </motion.div>
+      </motion.div>
+
+      {notes && (
+        <motion.div
+          className="receipt-notes-card"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.3 }}
         >
-          Start New Session
-        </Button>
-        
-        <div className="secondary-actions">
-          <Button variant="secondary" onClick={handleViewDashboard}>
-            View Dashboard
-          </Button>
-          <Button variant="secondary" onClick={handleViewAnalytics}>
-            View Analytics
-          </Button>
-        </div>
-      </div>
-    </div>
+          <span className="notes-heading"><i className="far fa-note-sticky"></i> Session Notes:</span>
+          <p className="notes-body">{notes}</p>
+        </motion.div>
+      )}
+
+      {/* Action Buttons */}
+      <motion.div
+        className="celebration-actions"
+        variants={staggerContainer(0.08, 0.5)}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => navigate('/dashboard')}
+          variants={staggerItem}
+          whileHover="hover"
+          whileTap="tap"
+          initial="rest"
+          {...proceedButton}
+        >
+          <i className="fas fa-th-large"></i>
+          <span>View on Dashboard</span>
+        </motion.button>
+
+        <motion.button
+          type="button"
+          className="btn btn-secondary"
+          onClick={onNewSession}
+          variants={staggerItem}
+          whileHover="hover"
+          whileTap="tap"
+          initial="rest"
+          {...proceedButton}
+        >
+          <i className="fas fa-plus"></i>
+          <span>Start Another Session</span>
+        </motion.button>
+      </motion.div>
+    </motion.div>
   );
 }
 

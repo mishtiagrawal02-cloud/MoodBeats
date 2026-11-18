@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { STORAGE_KEYS, AUDIO, TASKS } from '../utils/constants';
+import { readSessions, readStudyPreferences, STUDY_PREFERENCES_KEY } from '../utils/studyStorage';
 
 export const DATA_CHANGE_EVENT = 'moodbeats:data-changed';
 
@@ -10,20 +11,17 @@ export function notifyDataChange() {
   window.dispatchEvent(new CustomEvent(DATA_CHANGE_EVENT));
 }
 
-export function useUserData() {
-  // Read sessions without mutating or overwriting
-  const [sessions, setSessions] = useState(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
-      if (raw) return JSON.parse(raw);
-      // Fallback check to legacy without mutating
-      const legacy = localStorage.getItem(STORAGE_KEYS.LEGACY_SESSIONS);
-      if (legacy) return JSON.parse(legacy);
-    } catch (e) {
-      console.error('Failed to parse sessions from localStorage:', e);
-    }
+function readHistoryForDisplay() {
+  try {
+    return readSessions();
+  } catch (error) {
+    console.error('Session history is unavailable:', error);
     return [];
-  });
+  }
+}
+
+export function useUserData() {
+  const [sessions, setSessions] = useState(readHistoryForDisplay);
 
   // Read weekly goal
   const [goal, setGoalState] = useState(() => {
@@ -46,39 +44,29 @@ export function useUserData() {
     } catch (e) {
       console.error('Failed to parse userName from localStorage:', e);
     }
-    return 'Awantika';
+    return 'there';
   });
 
   // Quick study preset state (used to stage next study session)
-  const [quickStudyConfig, setQuickStudyConfigState] = useState(() => {
-    try {
-      const stored = localStorage.getItem('moodbeats:preSession');
-      if (stored) return JSON.parse(stored);
-    } catch {
-      // ignore
-    }
-    return { task: 'Reading', audio: 'lofi', mins: 25 };
-  });
+  const [quickStudyConfig, setQuickStudyConfigState] = useState(() => readStudyPreferences());
 
   // Check if current sessions contain any demo data
   const hasDemoData = useMemo(() => {
-    return sessions.some((s) => s.isDemo === true);
+    return sessions.some((s) => s?.isDemo === true);
   }, [sessions]);
 
   // Sync state from localStorage
   const refresh = useCallback(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS) || localStorage.getItem(STORAGE_KEYS.LEGACY_SESSIONS);
-      setSessions(raw ? JSON.parse(raw) : []);
+      setSessions(readHistoryForDisplay());
 
       const g = localStorage.getItem(STORAGE_KEYS.GOAL) || localStorage.getItem(STORAGE_KEYS.LEGACY_GOAL);
       setGoalState(g ? Number(g) || 150 : 150);
 
       const u = localStorage.getItem(STORAGE_KEYS.USER_NAME);
-      setUserNameState(u && u.trim() ? u.trim() : 'Awantika');
+      setUserNameState(u && u.trim() ? u.trim() : 'there');
 
-      const q = localStorage.getItem('moodbeats:preSession');
-      if (q) setQuickStudyConfigState(JSON.parse(q));
+      setQuickStudyConfigState(readStudyPreferences());
     } catch (err) {
       console.error('Error refreshing useUserData:', err);
     }
@@ -97,15 +85,39 @@ export function useUserData() {
 
   // Update quick study configuration
   const updateQuickStudyConfig = useCallback((partial) => {
-    setQuickStudyConfigState((prev) => {
-      const next = { ...prev, ...partial };
-      try {
-        localStorage.setItem('moodbeats:preSession', JSON.stringify(next));
-      } catch (e) {
-        console.error('Failed to store preSession config:', e);
+    try {
+      const next = { ...readStudyPreferences(), ...partial };
+      localStorage.setItem(STUDY_PREFERENCES_KEY, JSON.stringify(next));
+      notifyDataChange();
+      return true;
+    } catch (error) {
+      console.error('Failed to store study preferences:', error);
+      return false;
+    }
+  }, []);
+
+  const updateSettings = useCallback((name, minutes, preferences) => {
+    const updates = [
+      [STORAGE_KEYS.USER_NAME, name],
+      [STORAGE_KEYS.GOAL, String(minutes)],
+      [STUDY_PREFERENCES_KEY, JSON.stringify({ ...readStudyPreferences(), ...preferences })]
+    ];
+    const previous = updates.map(([key]) => localStorage.getItem(key));
+    let written = 0;
+    try {
+      updates.forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+        written += 1;
+      });
+    } catch (error) {
+      for (let index = written - 1; index >= 0; index--) {
+        const key = updates[index][0];
+        if (previous[index] === null) localStorage.removeItem(key);
+        else localStorage.setItem(key, previous[index]);
       }
-      return next;
-    });
+      throw error;
+    }
+    notifyDataChange();
   }, []);
 
   // Load clearly-labeled DEMO DATA (explicit user request only, never automatic)
@@ -148,10 +160,8 @@ export function useUserData() {
     }
 
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
-      const current = raw ? JSON.parse(raw) : [];
       // Filter out any prior demo data before adding new demo batch
-      const realOnly = current.filter((s) => !s.isDemo);
+      const realOnly = readSessions().filter((s) => !s?.isDemo);
       const combined = [...realOnly, ...demoSessions];
       localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(combined));
       setSessions(combined);
@@ -164,9 +174,7 @@ export function useUserData() {
   // Remove ONLY demo data, preserving all real user sessions
   const removeDemoData = useCallback(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
-      const current = raw ? JSON.parse(raw) : [];
-      const realOnly = current.filter((s) => !s.isDemo);
+      const realOnly = readSessions().filter((s) => !s?.isDemo);
       localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(realOnly));
       setSessions(realOnly);
       notifyDataChange();
@@ -181,6 +189,7 @@ export function useUserData() {
     userName,
     quickStudyConfig,
     updateQuickStudyConfig,
+    updateSettings,
     hasDemoData,
     loadDemoData,
     removeDemoData,

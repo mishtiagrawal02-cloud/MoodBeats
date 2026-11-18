@@ -1,96 +1,31 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { STORAGE_KEYS } from '../utils/constants';
+import { AUDIO, STUDY_SCENE_IDS } from '../utils/constants';
+import { ACTIVE_SESSION_KEY, STUDY_PREFERENCES_KEY, appendSession, calculateTimerData, readActiveSession, readStudyPreferences } from '../utils/studyStorage';
 import { notifyDataChange } from './useUserData';
 import { audioEngine } from '../utils/audioEngine';
 
-export const ACTIVE_SESSION_KEY = 'moodbeats:activeSession';
+export { ACTIVE_SESSION_KEY };
 
 export function useActiveStudySession() {
-  // Pre-session staging state
-  const [preCheckIn, setPreCheckIn] = useState(() => {
-    try {
-      const stored = localStorage.getItem('moodbeats:preSession');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return {
-          mood: typeof parsed.mood === 'number' ? parsed.mood : 3,
-          stress: typeof parsed.stress === 'number' ? parsed.stress : 5,
-          focus: typeof parsed.focus === 'number' ? parsed.focus : 5,
-          task: parsed.task || 'Reading',
-          customTask: parsed.customTask || ''
-        };
-      }
-    } catch {
-      // ignore
-    }
-    return {
-      mood: 3,
-      stress: 5,
-      focus: 5,
-      task: 'Reading',
-      customTask: ''
-    };
-  });
-
-  const [envConfig, setEnvConfig] = useState(() => {
-    try {
-      const stored = localStorage.getItem('moodbeats:preSession');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return {
-          durationMins: parsed.mins || 25,
-          customDuration: '',
-          audio: parsed.audio || 'lofi',
-          volume: 0.6
-        };
-      }
-    } catch {
-      // ignore
-    }
-    return {
-      durationMins: 25,
-      customDuration: '',
-      audio: 'lofi',
-      volume: 0.6
-    };
-  });
-
-  // Active Session State (persisted in localStorage)
-  const [activeSession, setActiveSession] = useState(() => {
-    try {
-      const raw = localStorage.getItem(ACTIVE_SESSION_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch {
-      // ignore
-    }
-    return null;
-  });
-
-  // Workflow Stage: 'CHECK_IN' | 'ENVIRONMENT' | 'ACTIVE' | 'AFTER_CHECKIN' | 'COMPLETED'
-  const [stage, setStage] = useState(() => {
-    try {
-      const raw = localStorage.getItem(ACTIVE_SESSION_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.stage === 'AFTER_CHECKIN' || parsed.status === 'COMPLETED_TIMER' || parsed.status === 'COMPLETED_EARLY') {
-          return 'AFTER_CHECKIN';
-        }
-        if (parsed.status === 'ACTIVE' || parsed.status === 'PAUSED') {
-          return 'ACTIVE';
-        }
-      }
-    } catch {
-      // ignore
-    }
-    return 'CHECK_IN';
-  });
-
-  // Timer Tick Data (seconds remaining and progress 0 to 1)
-  const [timerData, setTimerData] = useState(() => ({
-    remainingSeconds: 0,
-    elapsedSeconds: 0,
-    progress: 0
+  const [preferences] = useState(() => readStudyPreferences());
+  const [preCheckIn, setPreCheckIn] = useState(() => ({
+    mood: typeof preferences.mood === 'number' ? preferences.mood : 3,
+    stress: typeof preferences.stress === 'number' ? preferences.stress : 5,
+    focus: typeof preferences.focus === 'number' ? preferences.focus : 5,
+    task: preferences.task,
+    customTask: typeof preferences.customTask === 'string' ? preferences.customTask : ''
   }));
+  const [envConfig, setEnvConfig] = useState(() => ({
+    durationMins: preferences.mins,
+    customDuration: '',
+    audio: preferences.audio,
+    volume: preferences.volume,
+    background: preferences.background
+  }));
+
+  const [activeSession, setActiveSession] = useState(() => readActiveSession());
+  const [stage, setStage] = useState(() => activeSession?.stage ?? 'CHECK_IN');
+  const [timerData, setTimerData] = useState(() => calculateTimerData(activeSession));
 
   // Ref to hold activeSession for stable tick recalculation without re-triggering audio
   const activeSessionRef = useRef(activeSession);
@@ -98,6 +33,8 @@ export function useActiveStudySession() {
 
   // Completed session receipt
   const [completedReceipt, setCompletedReceipt] = useState(null);
+  const [saveError, setSaveError] = useState('');
+  const [audioError, setAudioError] = useState('');
 
   // Helper to persist active session state
   const saveActiveSession = useCallback((sess) => {
@@ -117,25 +54,11 @@ export function useActiveStudySession() {
     const session = activeSessionRef.current;
     if (!session) return;
 
-    const { startedAt, totalSeconds, status, pausedAt, totalPausedMs } = session;
+    const { totalSeconds, status } = session;
     const now = Date.now();
-
-    let effectiveElapsedMs = 0;
-    if (status === 'PAUSED' && pausedAt) {
-      effectiveElapsedMs = pausedAt - startedAt - (totalPausedMs || 0);
-    } else {
-      effectiveElapsedMs = now - startedAt - (totalPausedMs || 0);
-    }
-
-    const elapsedSeconds = Math.max(0, Math.floor(effectiveElapsedMs / 1000));
-    const remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds);
-    const progress = totalSeconds > 0 ? Math.min(1, elapsedSeconds / totalSeconds) : 0;
-
-    setTimerData({
-      remainingSeconds,
-      elapsedSeconds,
-      progress
-    });
+    const timer = calculateTimerData(session, now);
+    const { remainingSeconds } = timer;
+    setTimerData(timer);
 
     // Auto-complete timer check
     if (remainingSeconds <= 0 && status === 'ACTIVE') {
@@ -153,26 +76,42 @@ export function useActiveStudySession() {
     }
   }, [saveActiveSession]);
 
-  // High-frequency interval for smooth UI and drift-free background recovery
-  useEffect(() => {
-    if (!activeSession || activeSession.status !== 'ACTIVE') {
-      recalculateTime();
+  const playing = useRef(null);
+
+  const syncAudio = useCallback((session) => {
+    if (session.audio === 'none') {
+      setAudioError('');
+      audioEngine.stop();
+      playing.current = null;
       return;
     }
-
-    recalculateTime();
-    const interval = setInterval(recalculateTime, 500);
-
-    // Audio sync on mount if active
-    if (activeSession.audio && activeSession.audio !== 'none') {
-      audioEngine.start(activeSession.audio, activeSession.volume ?? 0.6);
+    if (playing.current?.id === session.id && playing.current.audio === session.audio) {
+      audioEngine.resume();
+      return;
     }
+    playing.current = null;
+    if (audioEngine.start(session.audio, session.volume)) {
+      playing.current = { id: session.id, audio: session.audio };
+      setAudioError('');
+    } else {
+      setAudioError('This soundscape is unavailable. The focus timer can continue.');
+    }
+  }, []);
 
-    return () => {
-      clearInterval(interval);
-      audioEngine.stop();
-    };
-  }, [activeSession?.status, activeSession?.id, recalculateTime]);
+  useEffect(() => {
+    const session = activeSessionRef.current;
+    if (!session) return;
+    recalculateTime();
+    if (session.status !== 'ACTIVE') return;
+    if (calculateTimerData(session).remainingSeconds > 0) syncAudio(session);
+    const interval = setInterval(recalculateTime, 500);
+    return () => clearInterval(interval);
+  }, [activeSession?.status, activeSession?.id, activeSession?.audio, recalculateTime, syncAudio]);
+
+  useEffect(() => () => {
+    playing.current = null;
+    audioEngine.stop();
+  }, []);
 
   // Start study session
   const startSession = useCallback(() => {
@@ -199,6 +138,7 @@ export function useActiveStudySession() {
       task: taskName,
       audio: envConfig.audio,
       volume: envConfig.volume,
+      background: envConfig.background,
       pre: {
         mood: preCheckIn.mood,
         stress: preCheckIn.stress,
@@ -210,11 +150,9 @@ export function useActiveStudySession() {
     saveActiveSession(sessionObj);
     setStage('ACTIVE');
 
-    // Start synthetic audio
-    if (sessionObj.audio !== 'none') {
-      audioEngine.start(sessionObj.audio, sessionObj.volume);
-    }
-  }, [envConfig, preCheckIn, saveActiveSession]);
+    setTimerData(calculateTimerData(sessionObj, now));
+    syncAudio(sessionObj);
+  }, [envConfig, preCheckIn, saveActiveSession, syncAudio]);
 
   // Pause session
   const pauseSession = useCallback(() => {
@@ -248,10 +186,8 @@ export function useActiveStudySession() {
     setActiveSession(updated);
     saveActiveSession(updated);
 
-    if (updated.audio !== 'none') {
-      audioEngine.resume();
-    }
-  }, [activeSession, saveActiveSession]);
+    syncAudio(updated);
+  }, [activeSession, saveActiveSession, syncAudio]);
 
   // Adjust volume
   const setVolume = useCallback((vol) => {
@@ -265,20 +201,40 @@ export function useActiveStudySession() {
     setEnvConfig((prev) => ({ ...prev, volume: clamped }));
   }, [activeSession, saveActiveSession]);
 
+  const setAudio = useCallback((audio) => {
+    if (!activeSession || !AUDIO.some(({ id }) => id === audio) || audio === activeSession.audio) return;
+    const updated = { ...activeSession, audio };
+    setActiveSession(updated);
+    saveActiveSession(updated);
+    if (updated.status === 'ACTIVE') syncAudio(updated);
+  }, [activeSession, saveActiveSession, syncAudio]);
+
+  // Switch the background scene — from the setup selector or while a session
+  // is live. Only the scene changes: timer, pause state, task, audio and
+  // check-ins are preserved. The choice is persisted to the study
+  // preferences immediately (and to the active session, when one exists).
+  const setBackground = useCallback((background) => {
+    if (!STUDY_SCENE_IDS.includes(background) || envConfig.background === background) return;
+    if (activeSession && activeSession.background !== background) {
+      const updated = { ...activeSession, background };
+      setActiveSession(updated);
+      saveActiveSession(updated);
+    }
+    setEnvConfig((prev) => ({ ...prev, background }));
+    try {
+      localStorage.setItem(STUDY_PREFERENCES_KEY, JSON.stringify({ ...readStudyPreferences(), background }));
+    } catch (error) {
+      console.error('Failed to store study preferences:', error);
+    }
+  }, [activeSession, envConfig.background, saveActiveSession]);
+
   // End session early with choice to check in
   const endSessionForCheckIn = useCallback(() => {
     if (!activeSession) return;
     audioEngine.stop();
 
     const now = Date.now();
-    const { startedAt, totalPausedMs, status, pausedAt, totalSeconds } = activeSession;
-    let effectiveElapsedMs = 0;
-    if (status === 'PAUSED' && pausedAt) {
-      effectiveElapsedMs = pausedAt - startedAt - totalPausedMs;
-    } else {
-      effectiveElapsedMs = now - startedAt - totalPausedMs;
-    }
-    const elapsedSeconds = Math.max(0, Math.min(totalSeconds, Math.floor(effectiveElapsedMs / 1000)));
+    const { elapsedSeconds } = calculateTimerData(activeSession, now);
 
     const updated = {
       ...activeSession,
@@ -304,6 +260,7 @@ export function useActiveStudySession() {
   // Save completed session after user finishes after-study check-in
   const finishAfterCheckIn = useCallback((afterData) => {
     if (!activeSession) return;
+    setSaveError('');
 
     // Calculate actual elapsed minutes safely:
     // 1. Preserve zero elapsed seconds as zero (never substitute totalSeconds / planned duration).
@@ -322,7 +279,7 @@ export function useActiveStudySession() {
     const cappedSeconds = Math.min(rawElapsedSeconds, plannedSeconds);
     const elapsedMinutes = cappedSeconds > 0 ? Math.ceil(cappedSeconds / 60) : 0;
 
-    const finalSession = {
+    let finalSession = {
       id: activeSession.id || Date.now(),
       ts: activeSession.id || Date.now(),
       task: activeSession.task,
@@ -342,13 +299,12 @@ export function useActiveStudySession() {
 
     // Save to moodbeats:sessions
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
-      const existing = raw ? JSON.parse(raw) : [];
-      const updatedList = [finalSession, ...existing];
-      localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(updatedList));
+      finalSession = appendSession(finalSession);
       notifyDataChange();
     } catch (e) {
       console.error('Failed to append completed session:', e);
+      setSaveError('Your session could not be saved. Your check-in is still open so you can try again.');
+      return;
     }
 
     // Clean active session
@@ -378,10 +334,14 @@ export function useActiveStudySession() {
     activeSession,
     timerData,
     completedReceipt,
+    saveError,
+    audioError,
     startSession,
     pauseSession,
     resumeSession,
     setVolume,
+    setAudio,
+    setBackground,
     endSessionForCheckIn,
     abandonSession,
     finishAfterCheckIn,

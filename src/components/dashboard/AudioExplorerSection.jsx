@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AUDIO } from '../../utils/constants';
+import { staggerContainer, staggerItem, selectionRing } from '../../utils/motionVariants';
 
 function AudioExplorerSection({ selectedAudio = 'lofi', onSelectAudio }) {
   const navigate = useNavigate();
@@ -17,22 +19,30 @@ function AudioExplorerSection({ selectedAudio = 'lofi', onSelectAudio }) {
           </p>
         </div>
 
-        <button
+        <motion.button
           type="button"
           className="link-view-all-btn"
           onClick={() => navigate('/audio')}
+          whileHover={{ x: 4 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
         >
           <span>Open Full Audio Library</span>
           <i className="fas fa-arrow-right"></i>
-        </button>
+        </motion.button>
       </div>
 
-      <div className="audio-cards-grid">
+      <motion.div 
+        className="audio-cards-grid"
+        variants={staggerContainer(0.08, 0.1)}
+        initial="hidden"
+        animate="visible"
+      >
         {AUDIO.map((audio) => {
           const isSelected = selectedAudio === audio.id;
 
           return (
-            <div
+            <motion.div
               key={audio.id}
               className={`audio-explorer-card ${isSelected ? 'is-selected' : ''}`}
               style={{ '--audio-accent': audio.c }}
@@ -46,13 +56,32 @@ function AudioExplorerSection({ selectedAudio = 'lofi', onSelectAudio }) {
                 }
               }}
               aria-pressed={isSelected}
+              variants={staggerItem}
+              whileHover={{ 
+                scale: 1.03,
+                boxShadow: '0 8px 24px rgba(139, 53, 255, 0.2)',
+                borderColor: 'rgba(139, 53, 255, 0.4)'
+              }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="audio-card-top">
-                <span className="audio-card-icon">{audio.icon}</span>
+                <motion.span 
+                  className="audio-card-icon"
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {audio.icon}
+                </motion.span>
                 {isSelected && (
-                  <span className="audio-active-badge">
+                  <motion.span 
+                    className="audio-active-badge"
+                    variants={selectionRing}
+                    initial="initial"
+                    animate="animate"
+                  >
                     <i className="fas fa-check"></i> Active Preset
-                  </span>
+                  </motion.span>
                 )}
               </div>
 
@@ -65,14 +94,19 @@ function AudioExplorerSection({ selectedAudio = 'lofi', onSelectAudio }) {
                 <span className="audio-type-tag">
                   {audio.type === 'none' ? 'Zero Sound' : 'Web Audio API'}
                 </span>
-                <span className="audio-select-hint">
+                <motion.span 
+                  className="audio-select-hint"
+                  initial={{ opacity: 0.6 }}
+                  whileHover={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
                   {isSelected ? 'Ready for study' : 'Click to select'}
-                </span>
+                </motion.span>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </section>
   );
 }

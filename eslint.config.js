@@ -18,6 +18,8 @@ export default [
         clearInterval: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
         CustomEvent: 'readonly',
         Float32Array: 'readonly',
         globalThis: 'readonly'

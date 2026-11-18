@@ -59,6 +59,7 @@ export function useAnalytics(sessions) {
     dateRange,
     setDateRange,
     days,
+    currentSessions,
     overview,
     moodTrends,
     focusStress,

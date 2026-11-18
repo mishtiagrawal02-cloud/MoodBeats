@@ -1,0 +1,48 @@
+.snow-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.snow-layer--front {
+  z-index: 8;
+}
+
+.snow-particle {
+  position: absolute;
+  top: -10px;
+  inline-size: var(--snow-size);
+  block-size: calc(100% + 20px);
+  animation: snow-drift linear infinite;
+}
+
+.snow-particle::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #edf7ff;
+  opacity: var(--snow-opacity);
+  content: '';
+}
+
+.snow-layer--front .snow-particle::before {
+  filter: blur(0.6px);
+}
+
+@keyframes snow-drift {
+  from { transform: translate3d(0, 0, 0); }
+  40% { transform: translate3d(calc(var(--snow-drift) * 0.7), 40%, 0); }
+  70% { transform: translate3d(calc(var(--snow-drift) * 0.55), 70%, 0); }
+  to { transform: translate3d(var(--snow-drift), 100%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snow-layer {
+    display: none;
+  }
+}

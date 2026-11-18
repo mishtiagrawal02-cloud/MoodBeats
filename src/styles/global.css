@@ -1,3 +1,4 @@
+
 /* ============================================
    GLOBAL STYLES
    ============================================ */
@@ -15,14 +16,15 @@
 
 /* ========== Root & Body ========== */
 html {
+  color-scheme: dark;
   scroll-behavior: smooth;
   scroll-padding-top: env(safe-area-inset-top, 0px);
 }
 
 body {
   margin: 0;
-  background: var(--obsidian);
-  color: var(--white);
+  background: var(--workspace-bg);
+  color: var(--workspace-text);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
@@ -35,9 +37,9 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   line-height: var(--line-height-tight);
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-bold);
   margin: 0;
-  color: var(--white);
+  color: var(--workspace-text);
 }
 
 h1 { font-size: var(--font-size-4xl); }
@@ -53,13 +55,13 @@ p {
 }
 
 a {
-  color: var(--electric-violet);
+  color: var(--workspace-amber);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--neon-purple);
+  color: var(--workspace-amber-hover);
 }
 
 /* ========== Form Elements ========== */
@@ -89,17 +91,16 @@ select {
   outline: none;
 }
 
-/* ========== Focus Styles (Accessibility) ========== */
+/* ========== Focus Styles ========== */
 :focus-visible {
-  outline: 3px solid var(--electric-violet);
+  outline: 2px solid var(--workspace-amber);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* ========== Selection ========== */
 ::selection {
-  background: var(--electric-violet);
-  color: var(--white);
+  background: var(--accent-gold);
+  color: var(--bg-primary);
 }
 
 /* ========== Scrollbar Styling ========== */
@@ -109,17 +110,17 @@ select {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--charcoal);
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--electric-violet);
+  background: var(--accent-gold);
   border-radius: 6px;
-  border: 2px solid var(--charcoal);
+  border: 2px solid var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-purple);
+  background: var(--accent-champagne);
 }
 
 /* ========== Utility Classes ========== */
@@ -136,10 +137,7 @@ select {
 }
 
 .text-gradient {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--workspace-amber);
 }
 
 /* ========== Reduced Motion ========== */

@@ -1,3 +1,6 @@
+import { motion } from 'framer-motion';
+import { buttonHover } from '../../utils/motionVariants';
+
 function Button({ 
   children, 
   variant = 'primary', 
@@ -10,16 +13,20 @@ function Button({
   const className = `btn btn-${variant}`;
   
   return (
-    <button
+    <motion.button
       type={type}
       className={className}
       onClick={onClick}
       disabled={disabled}
+      variants={buttonHover}
+      initial="rest"
+      whileHover={disabled ? undefined : 'hover'}
+      whileTap={disabled ? undefined : 'tap'}
       {...props}
     >
-      {icon && <i className={`fas fa-${icon}`}></i>}
+      {icon && <i className={`fas fa-${icon}`} aria-hidden="true" />}
       {children}
-    </button>
+    </motion.button>
   );
 }
 

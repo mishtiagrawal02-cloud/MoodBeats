@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AUDIO, TASKS } from '../../utils/constants';
+import { staggerContainer, staggerItem } from '../../utils/motionVariants';
 
 const DURATION_PRESETS = [
   { mins: 15, label: '15 min', tag: 'Sprint' },
@@ -42,9 +44,14 @@ function QuickStudySection({ quickConfig, onUpdateConfig }) {
         </span>
       </div>
 
-      <div className="quick-study-grid">
+      <motion.div 
+        className="quick-study-grid"
+        variants={staggerContainer(0.1, 0)}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Preset Duration */}
-        <div className="quick-study-group">
+        <motion.div className="quick-study-group" variants={staggerItem}>
           <label className="quick-study-label">
             <i className="far fa-clock"></i> Target Duration
           </label>
@@ -52,22 +59,25 @@ function QuickStudySection({ quickConfig, onUpdateConfig }) {
             {DURATION_PRESETS.map((p) => {
               const active = selectedMins === p.mins;
               return (
-                <button
+                <motion.button
                   key={p.mins}
                   type="button"
                   className={`preset-chip ${active ? 'active' : ''}`}
                   onClick={() => onUpdateConfig({ mins: p.mins })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
                 >
                   <span className="chip-time">{p.label}</span>
                   <span className="chip-tag">{p.tag}</span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Task Category */}
-        <div className="quick-study-group">
+        <motion.div className="quick-study-group" variants={staggerItem}>
           <label className="quick-study-label">
             <i className="fas fa-tasks"></i> Focus Task
           </label>
@@ -75,21 +85,24 @@ function QuickStudySection({ quickConfig, onUpdateConfig }) {
             {TASKS.map((t) => {
               const active = selectedTask === t;
               return (
-                <button
+                <motion.button
                   key={t}
                   type="button"
                   className={`task-chip ${active ? 'active' : ''}`}
                   onClick={() => onUpdateConfig({ task: t })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
                 >
                   {t}
-                </button>
+                </motion.button>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Audio Soundscape */}
-        <div className="quick-study-group">
+        <motion.div className="quick-study-group" variants={staggerItem}>
           <label className="quick-study-label">
             <i className="fas fa-music"></i> Preferred Soundscape
           </label>
@@ -97,37 +110,47 @@ function QuickStudySection({ quickConfig, onUpdateConfig }) {
             {AUDIO.map((a) => {
               const active = selectedAudio === a.id;
               return (
-                <button
+                <motion.button
                   key={a.id}
                   type="button"
                   className={`audio-mini-chip ${active ? 'active' : ''}`}
                   style={{ '--audio-theme': a.c }}
                   onClick={() => onUpdateConfig({ audio: a.id })}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
+                  transition={{ duration: 0.15 }}
                 >
                   <span className="audio-mini-icon">{a.icon}</span>
                   <span className="audio-mini-name">{a.n}</span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <div className="quick-study-footer">
+      <motion.div 
+        className="quick-study-footer"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.4 }}
+      >
         <div className="quick-study-summary">
           <span>Selected: </span>
           <strong>{selectedMins} minutes</strong> of <strong>{selectedTask}</strong> with <strong>{AUDIO.find(a => a.id === selectedAudio)?.n || 'Lo-fi'}</strong> soundscape
         </div>
 
-        <button
+        <motion.button
           type="button"
           className="btn btn-primary launch-session-btn"
           onClick={handleLaunch}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           <i className="fas fa-play-circle"></i>
           <span>Launch Study Session</span>
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     </section>
   );
 }

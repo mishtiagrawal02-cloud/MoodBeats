@@ -91,34 +91,36 @@ function StudyConsistencyChart({ consistencyData }) {
 
       <div className="chart-canvas-area" style={{ height: 260 }}>
         {hasData ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 280, height: 260 }}>
             <BarChart
               data={dayBuckets}
               margin={{ top: 16, right: 16, left: -10, bottom: 8 }}
             >
-              <CartesianGrid stroke="rgba(201, 180, 255, 0.08)" strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid stroke="var(--workspace-line)" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="day"
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 13 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 13 }}
                 tickLine={false}
-                axisLine={{ stroke: 'rgba(201, 180, 255, 0.12)' }}
+                axisLine={{ stroke: 'var(--workspace-line-strong)' }}
               />
               <YAxis
                 unit="m"
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 12 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip content={<CustomConsistencyTooltip />} />
-              <Bar dataKey="minutes" name="Minutes" radius={[6, 6, 0, 0]} maxBarSize={44}>
+              <Tooltip cursor={{ fill: 'rgb(var(--workspace-line-rgb) / 0.11)' }} content={<CustomConsistencyTooltip />} />
+              <Bar
+                isAnimationActive={false}
+dataKey="minutes" name="Minutes" radius={[6, 6, 0, 0]} maxBarSize={44}>
                 {dayBuckets.map((entry, index) => {
                   const isBest = entry.day === bestDay && entry.minutes > 0;
                   return (
                     <Cell
                       key={`cell-${index}`}
-                      fill={isBest ? '#BF5AFF' : 'rgba(139, 53, 255, 0.65)'}
+                      fill={isBest ? 'var(--workspace-chart-after)' : 'var(--workspace-chart-deep)'}
                     />
                   );
                 })}
@@ -140,7 +142,7 @@ function StudyConsistencyChart({ consistencyData }) {
 
       {hasData && bestDay && totalCompletedSessions >= 3 && (
         <div className="consistency-footer-note">
-          <i className="fas fa-lightbulb" style={{ color: 'var(--soft-lavender)' }}></i>
+          <i className="fas fa-lightbulb" style={{ color: 'var(--workspace-secondary)' }}></i>
           <span>
             You log your heaviest study load on <strong>{bestDay}s</strong> ({bestDayMinutes} minutes).
           </span>

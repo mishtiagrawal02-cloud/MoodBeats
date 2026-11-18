@@ -1296,3 +1296,454 @@
   }
 }
 
+
+
+/* ============================================
+   NEW: IMMERSIVE NIGHT SCENE BACKGROUND
+   ============================================ */
+
+.night-scene-background {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.night-window-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.night-moon {
+  fill: #E3DCCB;
+  animation: moonGlow 6s ease-in-out infinite;
+}
+
+@keyframes moonGlow {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 0.95; }
+}
+
+.night-star {
+  fill: #F5EFE0;
+  animation: starTwinkle 3s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 0.85; transform: scale(1.1); }
+}
+
+.night-building-far {
+  fill: #0B1630;
+  opacity: 0.7;
+}
+
+.night-building-near {
+  fill: #1A2B3F;
+  opacity: 0.85;
+}
+
+.night-flicker {
+  fill: #F2D9A6;
+  opacity: 0.8;
+  animation: windowFlicker 8s ease-in-out infinite;
+}
+
+@keyframes windowFlicker {
+  0%, 10%, 20%, 100% { opacity: 0.8; }
+  5%, 15% { opacity: 0.3; }
+}
+
+/* Desk-side decorations */
+.desk-decor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.desk-lamp {
+  position: fixed;
+  bottom: 0;
+  right: 3%;
+  width: clamp(100px, 10vw, 140px);
+  height: auto;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 20px rgba(242, 217, 166, 0.3));
+  z-index: 1;
+}
+
+.desk-plant {
+  position: fixed;
+  bottom: 0;
+  left: 2%;
+  width: clamp(90px, 8vw, 130px);
+  height: auto;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.desk-books {
+  position: fixed;
+  bottom: 0;
+  right: 14%;
+  width: clamp(110px, 12vw, 160px);
+  height: auto;
+  opacity: 0.75;
+  z-index: 1;
+}
+
+.lamp-glow {
+  position: fixed;
+  bottom: 10%;
+  right: 1%;
+  width: 400px;
+  height: 320px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(242, 217, 166, 0.2),
+    rgba(242, 217, 166, 0.08) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Snowfall layers */
+.snowfall {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.snowfall-back {
+  z-index: 0;
+}
+
+.snowfall-front {
+  z-index: 2;
+}
+
+/* Snow flake animation */
+@keyframes snowFall {
+  0% {
+    transform: translateY(-100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(var(--drift, 0));
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   WIDGET STYLES (Floating glassmorphic panels)
+   ============================================ */
+
+.widget-glass-panel {
+  background: rgba(20, 10, 18, 0.5);
+  border: 1px solid rgba(214, 189, 145, 0.25);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: var(--space-lg);
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.widget-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--va-text-primary);
+}
+
+.widget-icon {
+  font-size: 1.2rem;
+  color: var(--va-accent-gold);
+}
+
+/* Music Mixer Widget */
+.music-mixer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: var(--space-md);
+}
+
+.audio-env-btn {
+  padding: 12px;
+  background: rgba(11, 22, 48, 0.4);
+  border: 1.5px solid rgba(121, 83, 101, 0.4);
+  border-radius: var(--radius-md);
+  color: var(--va-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.audio-env-btn:hover {
+  border-color: var(--va-accent-gold);
+  background: rgba(168, 135, 85, 0.1);
+}
+
+.audio-env-btn.active {
+  border-color: var(--va-accent-gold);
+  background: rgba(168, 135, 85, 0.2);
+  box-shadow: 0 0 12px rgba(214, 189, 145, 0.3);
+}
+
+.audio-env-icon {
+  font-size: 1.4rem;
+}
+
+.audio-env-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--va-text-secondary);
+}
+
+.audio-env-btn.active .audio-env-label {
+  color: var(--va-accent-gold);
+}
+
+/* Insights Widget */
+.insights-mini-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(214, 189, 145, 0.1);
+}
+
+.insights-mini-stat:last-child {
+  border-bottom: none;
+}
+
+.insights-stat-label {
+  font-size: 0.85rem;
+  color: var(--va-text-secondary);
+}
+
+.insights-stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--va-accent-gold);
+}
+
+/* Clock Widget */
+.clock-display {
+  text-align: center;
+}
+
+.clock-time {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--va-text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+}
+
+.clock-date {
+  font-size: 0.9rem;
+  color: var(--va-text-secondary);
+  margin-top: 8px;
+}
+
+.clock-day {
+  font-size: 0.85rem;
+  color: var(--va-accent-gold);
+  font-weight: 600;
+}
+
+/* Quote Widget */
+.quote-text {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--va-text-primary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.quote-author {
+  font-size: 0.8rem;
+  color: var(--va-text-secondary);
+  text-align: right;
+}
+
+/* Bottom Navigation Dock */
+.bottom-nav-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(20, 10, 18, 0.6);
+  border: 1px solid rgba(214, 189, 145, 0.25);
+  border-radius: 999px;
+  padding: 10px 16px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.dock-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--va-text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.dock-nav-btn:hover {
+  color: var(--va-accent-gold);
+  transform: scale(1.1);
+}
+
+.dock-nav-btn.active {
+  background: rgba(168, 135, 85, 0.2);
+  color: var(--va-accent-gold);
+  box-shadow: 0 0 12px rgba(214, 189, 145, 0.3);
+}
+
+.dock-nav-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--va-accent-gold);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.dock-nav-btn.active::after {
+  opacity: 1;
+}
+
+/* ============================================
+   RESPONSIVE NIGHT SCENE
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .desk-lamp {
+    width: clamp(80px, 8vw, 120px);
+  }
+
+  .desk-plant {
+    width: clamp(70px, 6vw, 100px);
+  }
+
+  .desk-books {
+    width: clamp(90px, 10vw, 130px);
+  }
+
+  .widget-glass-panel {
+    padding: var(--space-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .desk-lamp {
+    width: 80px;
+    right: 2%;
+  }
+
+  .desk-plant {
+    width: 70px;
+    left: 1%;
+  }
+
+  .desk-books {
+    width: 90px;
+    right: 12%;
+  }
+
+  .bottom-nav-dock {
+    bottom: 16px;
+    padding: 8px 12px;
+    gap: 4px;
+  }
+
+  .dock-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 0.95rem;
+  }
+
+  .widget-glass-panel {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+  }
+
+  .widget-title {
+    font-size: 1rem;
+  }
+
+  .clock-time {
+    font-size: 1.8rem;
+  }
+
+  .quote-text {
+    font-size: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-moon,
+  .night-star,
+  .night-flicker {
+    animation: none;
+  }
+
+  .lamp-glow {
+    opacity: 0.8;
+  }
+}

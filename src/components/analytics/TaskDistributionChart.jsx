@@ -7,13 +7,13 @@ import {
 } from 'recharts';
 
 const TASK_PALETTE = [
-  '#BF5AFF', // Neon Purple
-  '#8B35FF', // Electric Violet
-  '#C9B4FF', // Soft Lavender
-  '#7C3AED', // Deep Violet
-  '#A855F7', // Medium Violet
-  '#4C1D95', // Dark Violet
-  '#938B9E'  // Muted Grey
+  'var(--workspace-chart-after)', // Neon Purple
+  'var(--workspace-chart-deep)', // Electric Violet
+  'var(--workspace-chart-sky)', // Soft Lavender
+  'var(--workspace-chart-accent)', // Deep Violet
+  'var(--workspace-chart-sand)', // Medium Violet
+  'var(--workspace-chart-before)', // Dark Violet
+  'var(--workspace-chart-before)'  // Muted Grey
 ];
 
 function CustomTaskTooltip({ active, payload }) {
@@ -78,12 +78,13 @@ function TaskDistributionChart({ taskData }) {
 
       <div className="task-content-split">
         {/* Donut Chart */}
-        <div className="task-chart-wrapper" style={{ height: 260, minWidth: 260 }}>
+        <div className="task-chart-wrapper">
           {hasData ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 280, height: 240 }}>
               <PieChart>
                 <Pie
-                  data={taskList}
+                  isAnimationActive={false}
+data={taskList}
                   cx="50%"
                   cy="50%"
                   innerRadius={65}

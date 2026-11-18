@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 function Input({ 
   label, 
   type = 'text', 
@@ -18,7 +20,7 @@ function Input({
           {required && <span style={{ color: 'var(--bad)' }}> *</span>}
         </label>
       )}
-      <input
+      <motion.input
         id={inputId}
         type={type}
         value={value}

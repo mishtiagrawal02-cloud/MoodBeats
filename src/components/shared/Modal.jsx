@@ -1,98 +1,56 @@
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { modalBackdrop, modalContent } from '../../utils/motionVariants';
 
 function Modal({ isOpen, onClose, title, children }) {
-  // Close on Escape key
+  const titleId = useId();
+
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
+    if (!isOpen) return;
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') onClose();
     };
-    
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
-  
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
     return () => {
-      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = previousOverflow;
     };
-  }, [isOpen]);
-  
-  if (!isOpen) return null;
-  
+  }, [isOpen, onClose]);
+
   return (
-    <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0, 0, 0, 0.7)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 'var(--z-modal-backdrop)',
-        padding: 'var(--space-lg)'
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: 'var(--charcoal)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-lg)',
-          padding: 'var(--space-xl)',
-          maxWidth: '600px',
-          width: '100%',
-          maxHeight: '90vh',
-          overflow: 'auto',
-          position: 'relative',
-          zIndex: 'var(--z-modal)'
-        }}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        {title && (
-          <h2 
-            id="modal-title" 
-            style={{ 
-              fontSize: 'var(--font-size-2xl)', 
-              marginBottom: 'var(--space-lg)' 
-            }}
-          >
-            {title}
-          </h2>
-        )}
-        {children}
-        <button
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="dialog-backdrop"
           onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: 'var(--space-lg)',
-            right: 'var(--space-lg)',
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: 'rgba(139, 53, 255, 0.1)',
-            color: 'var(--soft-lavender)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all var(--transition-base)'
-          }}
-          aria-label="Close modal"
+          variants={modalBackdrop}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
         >
-          <i className="fas fa-times"></i>
-        </button>
-      </div>
-    </div>
+          <motion.div
+            className="dialog-surface shared-dialog"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            variants={modalContent}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {title && <h2 id={titleId}>{title}</h2>}
+            {children}
+            <button type="button" className="btn btn-ghost btn-icon shared-dialog-close" onClick={onClose} aria-label="Close modal">
+              <i className="fas fa-times" aria-hidden="true" />
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

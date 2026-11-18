@@ -1,3 +1,4 @@
+import { getAudioGlyph } from '../../utils/constants';
 import {
   ResponsiveContainer,
   BarChart,
@@ -15,7 +16,7 @@ function CustomAudioTooltip({ active, payload }) {
     return (
       <div className="analytics-chart-tooltip">
         <p className="tooltip-title">
-          <span>{data.icon}</span> {data.name}
+          <span><i className={`fas ${getAudioGlyph(data.id)}`} aria-hidden="true" /></span> {data.name}
         </p>
 
         <div className="tooltip-row-item">
@@ -84,7 +85,7 @@ function AudioEnvironmentChart({ audioData }) {
             <div className="audio-highlight-card">
               <span className="highlight-tag">{mostUsed.sessionCount > 1 ? 'Most Frequent Choice' : 'Recorded Choice'}</span>
               <div className="highlight-main">
-                <span className="env-ico">{mostUsed.icon}</span>
+                <span className="env-ico"><i className={`fas ${getAudioGlyph(mostUsed.id)}`} aria-hidden="true" /></span>
                 <span className="env-title">{mostUsed.name}</span>
               </div>
               <span className="highlight-detail">
@@ -97,7 +98,7 @@ function AudioEnvironmentChart({ audioData }) {
             <div className="audio-highlight-card">
               <span className="highlight-tag">Top Focus Association</span>
               <div className="highlight-main">
-                <span className="env-ico">{bestFocusEnv.icon}</span>
+                <span className="env-ico"><i className={`fas ${getAudioGlyph(bestFocusEnv.id)}`} aria-hidden="true" /></span>
                 <span className="env-title">{bestFocusEnv.name}</span>
               </div>
               <span className="highlight-detail">
@@ -111,34 +112,36 @@ function AudioEnvironmentChart({ audioData }) {
       {/* Chart: Total Minutes by Soundscape */}
       <div className="chart-canvas-area" style={{ height: 260 }}>
         {hasData ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 280, height: 260 }}>
             <BarChart
               data={environmentList}
               layout="vertical"
               margin={{ top: 8, right: 30, left: 24, bottom: 8 }}
             >
-              <CartesianGrid stroke="rgba(201, 180, 255, 0.08)" strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid stroke="var(--workspace-line)" strokeDasharray="3 3" horizontal={false} />
               <XAxis
                 type="number"
                 unit="m"
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 12 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: 'rgba(201, 180, 255, 0.12)' }}
+                axisLine={{ stroke: 'var(--workspace-line-strong)' }}
               />
               <YAxis
                 type="category"
                 dataKey="name"
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--soft-lavender)', fontSize: 13 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 13 }}
                 tickLine={false}
                 axisLine={false}
                 width={85}
               />
-              <Tooltip content={<CustomAudioTooltip />} />
-              <Bar dataKey="totalMinutes" name="Minutes" radius={[0, 6, 6, 0]} maxBarSize={28}>
+              <Tooltip cursor={{ fill: 'rgb(var(--workspace-line-rgb) / 0.11)' }} content={<CustomAudioTooltip />} />
+              <Bar
+                isAnimationActive={false}
+dataKey="totalMinutes" name="Minutes" radius={[0, 6, 6, 0]} maxBarSize={28}>
                 {environmentList.map((entry) => (
-                  <Cell key={entry.id} fill={entry.color || '#BF5AFF'} />
+                  <Cell key={entry.id} fill={entry.color || 'var(--workspace-chart-after)'} />
                 ))}
               </Bar>
             </BarChart>
@@ -162,7 +165,7 @@ function AudioEnvironmentChart({ audioData }) {
           {environmentList.map((env) => (
             <div key={env.id} className="env-breakdown-row-item">
               <div className="env-row-meta">
-                <span className="env-row-icon">{env.icon}</span>
+                <span className="env-row-icon"><i className={`fas ${getAudioGlyph(env.id)}`} aria-hidden="true" /></span>
                 <div>
                   <strong className="env-row-name">{env.name}</strong>
                   <span className="env-row-sample">N = {env.sessionCount} {env.sessionCount === 1 ? 'session' : 'sessions'}</span>

@@ -1,3 +1,6 @@
+import RangeInput from './RangeInput';
+import { motion } from 'framer-motion';
+
 function Slider({ 
   label, 
   value, 
@@ -19,29 +22,30 @@ function Slider({
           {label}
         </label>
         {showValue && (
-          <output className="slider-value" htmlFor={sliderId}>
+          <motion.output 
+            className="slider-value" 
+            htmlFor={sliderId}
+            key={value}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.15 }}
+          >
             {value} / {max}
-          </output>
+          </motion.output>
         )}
       </div>
-      <input
+      <RangeInput
         id={sliderId}
-        type="range"
-        className="slider"
         min={min}
         max={max}
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        aria-label={description || label}
+        aria-describedby={description ? `${sliderId}-description` : undefined}
         {...props}
       />
       {description && (
-        <p style={{ 
-          fontSize: 'var(--font-size-sm)', 
-          color: 'var(--muted-grey)', 
-          marginTop: 'var(--space-xs)' 
-        }}>
+        <p id={`${sliderId}-description`} className="slider-description">
           {description}
         </p>
       )}

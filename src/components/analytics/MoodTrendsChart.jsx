@@ -107,18 +107,18 @@ function MoodTrendsChart({ moodData }) {
 
       <div className="chart-canvas-area" style={{ height: 320 }}>
         {hasData ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 280, height: 320 }}>
             <LineChart
               data={chartData}
               margin={{ top: 20, right: 24, left: -10, bottom: 10 }}
             >
-              <CartesianGrid stroke="rgba(201, 180, 255, 0.08)" strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid stroke="var(--workspace-line)" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="date"
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 12 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: 'rgba(201, 180, 255, 0.12)' }}
+                axisLine={{ stroke: 'var(--workspace-line-strong)' }}
               />
               <YAxis
                 domain={[1, 5]}
@@ -127,8 +127,8 @@ function MoodTrendsChart({ moodData }) {
                   const m = MOOD_SCALE.find((s) => s.value === val);
                   return m ? m.emoji : val;
                 }}
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 14 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 14 }}
                 tickLine={false}
                 axisLine={false}
               />
@@ -140,24 +140,26 @@ function MoodTrendsChart({ moodData }) {
                 iconType="circle"
               />
               <Line
-                type="monotone"
+                isAnimationActive={false}
+type="monotone"
                 dataKey="preMood"
                 name="Before Study"
-                stroke="#938B9E"
+                stroke="var(--workspace-chart-before)"
                 strokeWidth={2}
                 strokeDasharray="4 4"
-                dot={{ r: 4, fill: '#938B9E', stroke: '#15111D', strokeWidth: 2 }}
-                activeDot={{ r: 6, fill: '#C9B4FF' }}
+                dot={{ r: 4, fill: 'var(--workspace-chart-before)', stroke: 'var(--workspace-panel)', strokeWidth: 2 }}
+                activeDot={{ r: 6, fill: 'var(--workspace-chart-sky)' }}
                 connectNulls
               />
               <Line
-                type="monotone"
+                isAnimationActive={false}
+type="monotone"
                 dataKey="postMood"
                 name="After Study"
-                stroke="#BF5AFF"
+                stroke="var(--workspace-chart-after)"
                 strokeWidth={3}
-                dot={{ r: 5, fill: '#BF5AFF', stroke: '#09070D', strokeWidth: 2 }}
-                activeDot={{ r: 7, fill: '#F7F3FF', stroke: '#BF5AFF', strokeWidth: 3 }}
+                dot={{ r: 5, fill: 'var(--workspace-chart-after)', stroke: 'var(--workspace-bg)', strokeWidth: 2 }}
+                activeDot={{ r: 7, fill: 'var(--workspace-text)', stroke: 'var(--workspace-chart-after)', strokeWidth: 3 }}
                 connectNulls
               />
             </LineChart>

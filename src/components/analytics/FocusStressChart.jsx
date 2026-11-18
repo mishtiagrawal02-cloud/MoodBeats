@@ -77,7 +77,7 @@ function FocusStressChart({ focusStressData }) {
       <div className="panel-card-header">
         <div>
           <div className="panel-title-row">
-            <i className="fas fa-scale-balanced text-gradient"></i>
+            <i className="fas fa-scale-balanced text-gradient" aria-hidden="true"></i>
             <h2 className="panel-title">Focus & Stress Dynamics</h2>
           </div>
           <p className="panel-subtitle">
@@ -95,43 +95,45 @@ function FocusStressChart({ focusStressData }) {
 
       <div className="chart-canvas-area" style={{ height: 280 }}>
         {hasData ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 280, height: 280 }}>
             <BarChart
               data={comparisonData}
               margin={{ top: 20, right: 30, left: -10, bottom: 10 }}
               barGap={12}
             >
-              <CartesianGrid stroke="rgba(201, 180, 255, 0.08)" strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid stroke="var(--workspace-line)" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="metric"
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 13 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 13 }}
                 tickLine={false}
-                axisLine={{ stroke: 'rgba(201, 180, 255, 0.12)' }}
+                axisLine={{ stroke: 'var(--workspace-line-strong)' }}
               />
               <YAxis
                 domain={[0, 10]}
                 ticks={[0, 2, 4, 6, 8, 10]}
-                stroke="var(--muted-grey)"
-                tick={{ fill: 'var(--muted-grey)', fontSize: 12 }}
+                stroke="var(--workspace-secondary)"
+                tick={{ fill: 'var(--workspace-secondary)', fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip content={<CustomFocusStressTooltip />} />
+              <Tooltip cursor={{ fill: 'rgb(var(--workspace-line-rgb) / 0.11)' }} content={<CustomFocusStressTooltip />} />
               <Legend
                 verticalAlign="top"
                 align="right"
                 wrapperStyle={{ paddingBottom: '16px', fontSize: '12px' }}
               />
               <Bar
-                dataKey="Before"
+                isAnimationActive={false}
+dataKey="Before"
                 name="Before Study"
-                fill="#938B9E"
+                fill="var(--workspace-chart-before)"
                 radius={[6, 6, 0, 0]}
                 maxBarSize={48}
               />
               <Bar
-                dataKey="After"
+                isAnimationActive={false}
+dataKey="After"
                 name="After Study"
                 fill="url(#focus-after-grad)"
                 radius={[6, 6, 0, 0]}
@@ -139,8 +141,8 @@ function FocusStressChart({ focusStressData }) {
               />
               <defs>
                 <linearGradient id="focus-after-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#BF5AFF" />
-                  <stop offset="100%" stopColor="#8B35FF" />
+                  <stop offset="0%" stopColor="var(--workspace-chart-after)" />
+                  <stop offset="100%" stopColor="var(--workspace-chart-deep)" />
                 </linearGradient>
               </defs>
             </BarChart>
