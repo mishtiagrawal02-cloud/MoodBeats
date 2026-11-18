@@ -1,0 +1,252 @@
+/* Ambient motion + lighting layers for the study room scenes.
+   Mirrors snowfall.css: purely decorative, cheap CSS animations, and fully
+   disabled under prefers-reduced-motion. All layers are pointer-events:none
+   and animate only opacity/transform. */
+
+.scene-art-img {
+  animation: scene-art-in 480ms ease both;
+}
+
+.scene-art-img--leaving {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  animation: scene-art-out 620ms ease forwards;
+}
+
+@keyframes scene-art-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scene-art-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.scene-petal-layer,
+.scene-breeze-layer,
+.scene-sunlight-layer,
+.scene-night-glow-layer {
+  animation: scene-layer-in 500ms ease both;
+}
+
+@keyframes scene-layer-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Sakura petals ─────────────────────────────────────────────────────── */
+
+.scene-petal-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-petal-layer--front {
+  z-index: 8;
+}
+
+.scene-petal {
+  position: absolute;
+  top: -14px;
+  inline-size: var(--petal-size);
+  aspect-ratio: 1 / 1.15;
+  background: linear-gradient(135deg, #ffd9e2, #ffb3c8);
+  border-radius: 60% 40% 55% 45% / 65% 55% 45% 35%;
+  opacity: var(--petal-opacity);
+  animation: petal-drift linear infinite;
+}
+
+.scene-petal-layer--front .scene-petal {
+  filter: blur(1px);
+}
+
+@keyframes petal-drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  35% { transform: translate3d(calc(var(--petal-drift) * 0.8), 38%, 0) rotate(calc(var(--petal-spin) * 0.4)); }
+  70% { transform: translate3d(calc(var(--petal-drift) * 0.55), 72%, 0) rotate(calc(var(--petal-spin) * 0.75)); }
+  to { transform: translate3d(var(--petal-drift), 105%, 0) rotate(var(--petal-spin)); }
+}
+
+/* ── Sunny Afternoon: sunlight rays + dust motes ───────────────────────── */
+
+.scene-sunlight-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-sun-ray {
+  position: absolute;
+  top: -12%;
+  inline-size: var(--ray-width);
+  block-size: 130%;
+  background: linear-gradient(
+    to bottom,
+    rgb(255 216 140 / 0.17),
+    rgb(255 210 130 / 0.07) 52%,
+    transparent 82%
+  );
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 55% 100%);
+  transform: rotate(16deg);
+  transform-origin: top left;
+  opacity: var(--ray-opacity);
+  animation: ray-shimmer ease-in-out infinite alternate;
+}
+
+@keyframes ray-shimmer {
+  from { opacity: calc(var(--ray-opacity) * 0.55); transform: rotate(15.4deg); }
+  to { opacity: var(--ray-opacity); transform: rotate(16.6deg); }
+}
+
+.scene-dust {
+  position: absolute;
+  inline-size: var(--dust-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgb(255 240 200);
+  opacity: var(--dust-opacity);
+  animation: dust-float ease-in-out infinite alternate;
+}
+
+@keyframes dust-float {
+  from { transform: translate3d(0, 0, 0); opacity: calc(var(--dust-opacity) * 0.5); }
+  50% { opacity: var(--dust-opacity); }
+  to { transform: translate3d(var(--dust-x), var(--dust-y), 0); opacity: calc(var(--dust-opacity) * 0.35); }
+}
+
+/* ── Sunny Afternoon: breeze sheen + leaves ────────────────────────────── */
+
+.scene-breeze-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-breeze-light {
+  position: absolute;
+  inset: -12%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgb(255 226 / 0.16) 52%,
+    rgb(255 214 / 0.1) 60%,
+    transparent 72%
+  );
+  animation: breeze-sheen 11s ease-in-out infinite alternate;
+}
+
+@keyframes breeze-sheen {
+  from { opacity: 0.45; transform: translate3d(-1.5%, -1%, 0); }
+  to { opacity: 1; transform: translate3d(1.5%, 1%, 0); }
+}
+
+.scene-breeze-leaf {
+  position: absolute;
+  inline-size: var(--leaf-size);
+  aspect-ratio: 1 / 0.62;
+  background: linear-gradient(135deg, #9ccf8f, #6ea862);
+  border-radius: 0 70% 0 70%;
+  opacity: var(--leaf-opacity);
+  filter: blur(0.4px);
+  animation: leaf-sway ease-in-out infinite alternate;
+}
+
+@keyframes leaf-sway {
+  from { transform: translate3d(0, 0, 0) rotate(var(--leaf-tilt)); }
+  to {
+    transform: translate3d(var(--leaf-sway), calc(var(--leaf-sway) * 0.6), 0)
+      rotate(calc(var(--leaf-tilt) * -1.6));
+  }
+}
+
+/* ── Night Study: window glow + moonlight ambience ─────────────────────── */
+
+.scene-night-glow-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene-glow--warm {
+  position: absolute;
+  top: 8%;
+  height: 63%;
+  background: radial-gradient(
+    ellipse at center,
+    rgb(255 190 120 / 0.15),
+    rgb(255 180 110 / 0.07) 55%,
+    transparent 78%
+  );
+}
+
+.scene-glow--wide {
+  left: 19.5%;
+  width: 44.3%;
+  clip-path: polygon(21% 0, 100% 0, 100% 100%, 88% 95%, 87% 80%, 74% 63%, 59% 68%, 51% 100%, 16% 100%, 13% 80%, 0 77%, 4% 51%, 12% 33%);
+  animation: glow-pulse 9s ease-in-out infinite alternate;
+}
+
+.scene-glow--narrow {
+  left: 66%;
+  width: 18.1%;
+  clip-path: polygon(0 0, 68% 0, 82% 28%, 100% 59%, 74% 68%, 66% 92%, 58% 75%, 43% 100%, 0 100%);
+  animation: glow-pulse 11s ease-in-out infinite alternate-reverse;
+}
+
+.scene-glow--moon {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 58% 42% at 72% 12%, rgb(120 160 220 / 0.1), transparent 70%),
+    linear-gradient(180deg, rgb(110 150 215 / 0.05), transparent 40%);
+  animation: glow-pulse 13s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+/* ── Reduced motion: no decorative movement or transitions ─────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-petal-layer,
+  .scene-petal-layer--front,
+  .scene-breeze-layer,
+  .scene-sunlight-layer {
+    display: none;
+  }
+
+  .scene-night-glow-layer {
+    animation: none;
+  }
+
+  .scene-glow--warm,
+  .scene-glow--moon {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .scene-art-img,
+  .scene-art-img--leaving {
+    animation: none;
+  }
+
+  .scene-art-img--leaving {
+    display: none;
+  }
+}

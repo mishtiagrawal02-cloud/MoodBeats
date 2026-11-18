@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MoodBeats - Focus, Study, Discover</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <i class="fas fa-wave-square"></i>
+      <span>MoodBeats</span>
+    </div>
+  </div>
+  
+  <nav class="sidebar-nav" aria-label="Main">
+    <button id="n-dash" onclick="go('dash')" class="nav-item">
+      <i class="fas fa-th-large"></i>
+      <span>Dashboard</span>
+    </button>
+    <button id="n-session" onclick="go('session')" class="nav-item">
+      <i class="fas fa-play-circle"></i>
+      <span>Study</span>
+    </button>
+    <button id="n-audio" onclick="go('audio')" class="nav-item">
+      <i class="fas fa-music"></i>
+      <span>Audio Library</span>
+    </button>
+    <button id="n-hist" onclick="go('hist')" class="nav-item">
+      <i class="fas fa-history"></i>
+      <span>Sessions</span>
+    </button>
+    <button id="n-analytics" onclick="go('analytics')" class="nav-item">
+      <i class="fas fa-chart-line"></i>
+      <span>Analytics</span>
+    </button>
+    <button id="n-profile" onclick="go('profile')" class="nav-item">
+      <i class="fas fa-user-circle"></i>
+      <span>Profile</span>
+    </button>
+  </nav>
+  
+  <div class="sidebar-footer">
+    <svg viewBox="0 0 200 120" class="mountain-illustration" aria-hidden="true">
+      <defs>
+        <linearGradient id="moon-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#BF5AFF;stop-opacity:0.4" />
+          <stop offset="100%" style="stop-color:#8B35FF;stop-opacity:0.1" />
+        </linearGradient>
+      </defs>
+      <circle cx="160" cy="25" r="18" fill="url(#moon-glow)" />
+      <circle cx="160" cy="25" r="12" fill="#C9B4FF" opacity="0.8" />
+      <path d="M0,80 L40,50 L60,65 L80,40 L100,60 L130,35 L160,55 L200,45 L200,120 L0,120 Z" fill="#15111D" opacity="0.6" />
+      <path d="M0,90 L30,70 L50,80 L90,60 L120,75 L150,65 L180,75 L200,70 L200,120 L0,120 Z" fill="#15111D" opacity="0.8" />
+    </svg>
+  </div>
+</aside>
+
+<!-- Main Content Area -->
+<div class="main-wrapper">
+  <main id="app"></main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

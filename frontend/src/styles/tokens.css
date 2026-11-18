@@ -1,0 +1,213 @@
+
+/* ============================================
+   MOODBEATS THEME
+   ============================================ */
+
+:root {
+  --workspace-bg: #0b1528;
+  --workspace-bg-rgb: 11 21 40;
+  --workspace-sidebar-bg: #101d32;
+  --workspace-panel: #172943;
+  --workspace-control: #1d324d;
+  --workspace-hover: #243b57;
+  --workspace-sidebar-hover: #354d68;
+  --workspace-line-rgb: 168 190 215;
+  --workspace-line: rgb(var(--workspace-line-rgb) / 0.16);
+  --workspace-sidebar-line: rgb(var(--workspace-line-rgb) / 0.18);
+  --workspace-line-strong: rgb(var(--workspace-line-rgb) / 0.45);
+  --workspace-glass: color-mix(in srgb, var(--workspace-panel) 94%, transparent);
+  --workspace-text: #f5efe5;
+  --workspace-secondary: #c5cfdc;
+  --workspace-muted: #91a1b5;
+  --workspace-amber: #d6bd91;
+  --workspace-antique: #a88755;
+  --workspace-amber-hover: #e5cfa7;
+  --workspace-amber-ink: var(--workspace-bg);
+  --workspace-rose: #c99ca8;
+  --workspace-rose-muted: #b77d85;
+  --workspace-success: #a9c5b2;
+  --workspace-warning: #ddbd8a;
+  --workspace-error: #e6b2ad;
+  --workspace-info: #a3bfdc;
+  --workspace-success-surface: color-mix(in srgb, var(--workspace-success) 12%, var(--workspace-sidebar-bg));
+  --workspace-warning-surface: color-mix(in srgb, var(--workspace-warning) 12%, var(--workspace-sidebar-bg));
+  --workspace-error-surface: color-mix(in srgb, var(--workspace-error) 12%, var(--workspace-sidebar-bg));
+  --workspace-error-hover: color-mix(in srgb, var(--workspace-error) 20%, var(--workspace-sidebar-bg));
+  --workspace-selected-line: color-mix(in srgb, var(--workspace-amber) 72%, var(--workspace-control));
+  --workspace-track: #647d9b;
+  --workspace-backdrop: rgb(var(--workspace-bg-rgb) / 0.8);
+  --workspace-chart-before: var(--workspace-muted);
+  --workspace-chart-after: #8eb3de;
+  --workspace-chart-accent: var(--workspace-amber);
+  --workspace-chart-deep: #6789b1;
+  --workspace-chart-sky: #a3bfdc;
+  --workspace-chart-sand: var(--workspace-antique);
+  --workspace-moon: #e8eefc;
+  --workspace-moon-light: #b4c9f3;
+  --radius-control: 0.625rem;
+  --radius-surface: 1rem;
+  --control-height: 2.75rem;
+  --workspace-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --workspace-gutter: clamp(1rem, 3.3vw, 3.4rem);
+  --workspace-page-width: 94rem;
+
+  /* Compatibility aliases for existing components */
+  --bg-primary: var(--workspace-bg);
+  --bg-secondary: var(--workspace-sidebar-bg);
+  --bg-card: var(--workspace-panel);
+  --bg-card-hover: var(--workspace-hover);
+  --text-primary: var(--workspace-text);
+  --text-secondary: var(--workspace-secondary);
+  --text-muted: var(--workspace-muted);
+  --accent-gold: var(--workspace-amber);
+  --accent-champagne: var(--workspace-amber);
+  --accent-rose: var(--workspace-rose);
+  --workspace-rose-rgb: 201 156 168;
+  --workspace-rose-surface: var(--workspace-control);
+  --accent-plum: var(--workspace-line-strong);
+  --cream: var(--workspace-text);
+  --obsidian: var(--bg-primary);
+  --charcoal: var(--workspace-panel);
+  --electric-violet: var(--workspace-info);
+  --neon-purple: var(--workspace-amber);
+  --soft-lavender: var(--workspace-secondary);
+  --muted-grey: var(--workspace-muted);
+  --white: var(--workspace-text);
+  --border: var(--workspace-line);
+  --glow: rgb(var(--workspace-line-rgb) / 0.14);
+  --gradient: linear-gradient(135deg, var(--workspace-amber), var(--workspace-amber-hover));
+
+  --va-bg-primary: var(--bg-primary);
+  --va-bg-secondary: var(--bg-secondary);
+  --va-bg-card: var(--bg-card);
+  --va-bg-card-hover: var(--bg-card-hover);
+  --va-text-primary: var(--text-primary);
+  --va-text-secondary: var(--text-secondary);
+  --va-text-muted: var(--text-muted);
+  --va-accent-gold: var(--accent-gold);
+  --va-accent-champagne: var(--accent-champagne);
+  --va-accent-rose: var(--accent-rose);
+  --va-accent-plum: var(--accent-plum);
+  --va-border: var(--border);
+  --va-cream: var(--cream);
+
+  /* ========== Snowy Night Study Room ========== */
+  /* Deep burgundy room walls */
+  --sn-wall-1: #2A1220;
+  --sn-wall-2: #1B0D15;
+  --sn-wall-3: #341724;
+
+  /* Midnight blue night sky (window) */
+  --sn-sky-1: #0B1630;
+  --sn-sky-2: #14264C;
+  --sn-sky-3: #1E3562;
+  --sn-horizon: #3A2140;
+
+  /* City skyline + warm lit windows */
+  --sn-skyline-far: #22345C;
+  --sn-skyline-near: #101C3A;
+  --sn-city-light-1: #F2D9A6;
+  --sn-city-light-2: #D6BD91;
+
+  /* Moon + snowfall */
+  --sn-moon: #F5EFE0;
+  --sn-snow: #F7F3EC;
+
+  /* Dusty rose + champagne lamp accents */
+  --sn-rose: #C99CA8;
+  --sn-rose-deep: #B77D85;
+  --sn-lamp: #F2D9A6;
+  --sn-gold: #D6BD91;
+  --sn-gold-deep: #A88755;
+
+  /* Desk surface + frosted glass panels */
+  --sn-desk-1: #3A1E2A;
+  --sn-desk-2: #241019;
+  --sn-glass-bg: rgba(23, 11, 19, 0.55);
+  --sn-glass-border: rgba(214, 189, 145, 0.28);
+
+  /* Semantic Colors */
+  --good: var(--workspace-success);
+  --bad: var(--workspace-error);
+  --warning: var(--workspace-warning);
+
+  /* ========== Spacing Scale ========== */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* ========== Border Radius ========== */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* ========== Typography ========== */
+  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-heading: "Playfair Display", Georgia, serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* ========== Layout ========== */
+  --sidebar-width: 250px;
+  --header-height: 80px;
+  --max-content-width: 1400px;
+
+  /* ========== Transitions ========== */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* ========== Motion & Animation ========== */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-moderate: 500ms;
+  --duration-slow: 650ms;
+
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ========== Shadows ========== */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 20px var(--glow);
+
+  /* ========== Z-Index Scale ========== */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+}
+
+/* ========== Responsive Breakpoints ========== */
+/* Mobile: < 640px */
+/* Tablet: 640px - 1024px */
+/* Desktop: > 1024px */
