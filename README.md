@@ -4,6 +4,48 @@
 
 MoodBeats is a futuristic, premium study productivity application that helps you discover which audio environments enhance your focus and mood. Track your study sessions, monitor your progress, and understand your personal productivity patterns.
 
+## 📁 Project Structure
+
+The complete React + Vite application lives inside [`frontend/`](frontend/). Repository-level documentation, screenshots, GitHub workflows and configuration stay at the root.
+
+```
+MoodBeats/
+├── frontend/            # Complete React + Vite application
+│   ├── public/
+│   ├── src/             # Components, pages, hooks, utils, styles, tests
+│   ├── index.html       # React entry point
+│   ├── index-react.html # React entry point (legacy alias)
+│   ├── index-legacy.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── eslint.config.js
+├── docs/                # Project documentation, reports and screenshots
+├── .github/workflows/   # CI (runs from frontend/)
+├── .gitignore
+└── README.md
+```
+
+## 🚀 Installation & Commands
+
+All application commands run from the `frontend/` directory:
+
+```bash
+cd frontend
+npm install
+
+# Development
+npm run dev
+
+# Tests
+npm test
+
+# Build
+npm run build
+
+# Lint
+npm run lint
+```
+
 ## ✨ Features
 
 ### 📊 Dashboard
@@ -94,12 +136,18 @@ MoodBeats is a futuristic, premium study productivity application that helps you
 ### File Structure
 ```
 MoodBeats/
-├── index.html          # Main HTML structure
-├── style.css           # Complete design system
-├── script.js           # Application logic and audio engine
-├── react-app.js        # Placeholder (not currently used)
-└── README.md           # Documentation
+├── frontend/           # React + Vite application (see Project Structure above)
+│   └── ...
+│   ├── index-legacy.html  # Original vanilla-JS entry point
+│   ├── script.js          # Legacy application logic and audio engine
+│   ├── style.css          # Legacy design system
+│   └── react-app.js       # Legacy placeholder
+└── docs/               # Documentation and reports
 ```
+
+> **Note:** The active application is the React app in `frontend/`. The legacy
+> vanilla-JS files (`index-legacy.html`, `script.js`, `style.css`,
+> `react-app.js`) are kept for reference.
 
 ### Key Functions
 
@@ -195,7 +243,8 @@ The application is fully responsive:
 
 ## 🚀 Getting Started
 
-1. **Open** `index.html` in a modern web browser
+1. **Install and start the dev server** (see Installation & Commands above):
+   `cd frontend && npm install && npm run dev`
 2. **Enter your name** in Profile settings (optional)
 3. **Set your weekly goal** in Profile (default: 150 minutes)
 4. **Start your first session** from Dashboard or Study page
@@ -224,7 +273,7 @@ Positive values indicate improved mood after the session.
 ## 🎨 Customization
 
 ### Changing Colors
-Edit CSS custom properties in `style.css`:
+Edit CSS custom properties in `frontend/style.css` (legacy app):
 ```css
 :root {
   --obsidian: #09070D;
@@ -235,10 +284,10 @@ Edit CSS custom properties in `style.css`:
 ```
 
 ### Adding Audio Types
-Edit the `AUDIO` array in `script.js` and implement audio generation logic in `startAudio()`.
+Edit the `AUDIO` array in `frontend/script.js` (legacy app) — for the React app, edit `frontend/src/utils/constants.js` and `frontend/src/utils/audioEngine.js`.
 
 ### Modifying Tasks
-Edit the `TASKS` array in `script.js`:
+Edit the `TASKS` array in `frontend/script.js` (legacy app) or `frontend/src/utils/constants.js` (React app):
 ```javascript
 const TASKS = ['Reading', 'Writing', 'Problem solving', ...];
 ```
