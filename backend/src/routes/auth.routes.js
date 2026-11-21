@@ -19,4 +19,18 @@ router.post('/register', validate(createUserSchema), authController.register);
  */
 router.post('/login', validate(loginSchema), authController.login);
 
+/**
+ * @route   GET /api/auth/google
+ * @desc    Initiate Google OAuth 2.0 flow
+ * @access  Public
+ */
+router.get('/google', authController.initiateGoogleAuth);
+
+/**
+ * @route   GET /api/auth/google/callback
+ * @desc    Google OAuth 2.0 callback endpoint
+ * @access  Public
+ */
+router.get('/google/callback', authController.handleGoogleCallback);
+
 export default router;
