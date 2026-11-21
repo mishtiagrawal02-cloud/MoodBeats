@@ -1,4 +1,4 @@
-# 🎵 MoodBeats - Premium Study Productivity Platform
+#  MoodBeats - Premium Study Productivity Platform
 
 ## Overview
 
@@ -25,7 +25,7 @@ MoodBeats/
 └── README.md
 ```
 
-## 🚀 Installation & Commands
+##  Installation & Commands
 
 All application commands run from the `frontend/` directory:
 
@@ -46,9 +46,9 @@ npm run build
 npm run lint
 ```
 
-## ✨ Features
+##  Features
 
-### 📊 Dashboard
+###  Dashboard
 - **Personalized greeting** with your name and time-based salutation
 - **Study statistics** showing day streak, weekly goal progress, and total study time
 - **Quick session start** with beautiful card design
@@ -58,7 +58,7 @@ npm run lint
 - **Study insights** showing total time, average focus/stress/mood changes
 - **Focus trend chart** displaying 7-day focus patterns
 
-### 🎯 Study Session
+###  Study Session
 - **Pre-session check-in** capturing mood, stress, focus levels
 - **Task selection** from 6 study categories (Reading, Writing, Problem solving, etc.)
 - **Audio selection** from 6 synthetically generated audio types
@@ -69,7 +69,7 @@ npm run lint
 - **Pause/Resume** functionality
 - **Post-session check-in** to measure changes
 
-### 🎧 Audio Library
+###  Audio Library
 - **6 Audio Types:**
   - **Lo-fi**: Mellow chords with vinyl hiss
   - **Instrumental**: Soft arpeggios, no beat
@@ -80,21 +80,21 @@ npm run lint
 - All audio generated using **Web Audio API** (no files required)
 - Visual cards with distinct colors and icons
 
-### 📅 Session History
+###  Session History
 - Complete list of all study sessions
 - Session details: audio type, task, duration, timestamp
 - Before/after metrics for focus, stress, and mood
 - Delete individual sessions
 - Empty state with call-to-action
 
-### 📈 Analytics
+###  Analytics
 - **Audio type comparison** charts
 - Switch between Focus, Stress Reduction, and Mood metrics
 - Bar charts showing average change per audio type
 - Session count display for each audio type
 - Color-coded visualizations
 
-### 👤 Profile
+###  Profile
 - **Personal information** with name customization
 - **Weekly goal setting** (30-600 minutes)
 - **Data management:**
@@ -102,7 +102,7 @@ npm run lint
   - Clear all sessions
 - Local storage information
 
-## 🎨 Design System
+##  Design System
 
 ### Color Palette
 | Token | Hex | Usage |
@@ -123,7 +123,7 @@ npm run lint
 - **Premium typography** using Bricolage Grotesque and DM Sans
 - **Responsive grid system** for flexible layouts
 
-## 🏗️ Architecture
+## Architecture
 
 ### Technology Stack
 - **HTML5** - Semantic markup
@@ -172,7 +172,7 @@ MoodBeats/
 - `chart(g, metric)` - Generates SVG bar charts
 - `save()` - Persists sessions to localStorage
 
-## 💾 Data Storage
+##  Data Storage
 
 ### LocalStorage Keys
 - `moodbeats:sessions` - Array of session objects
@@ -200,11 +200,11 @@ MoodBeats/
 }
 ```
 
-## 🔄 Migration from StudyBeats
+##  Migration from StudyBeats
 
 The application automatically migrates data from the old `studybeats:` keys to new `moodbeats:` keys on first load. Existing sessions are preserved.
 
-## 🎯 Functionality Preserved
+##  Functionality Preserved
 
 All original StudyBeats functionality has been maintained:
 
@@ -223,7 +223,7 @@ All original StudyBeats functionality has been maintained:
 ✅ Dashboard calculations and statistics  
 ✅ Weekly goal tracking  
 
-## 📱 Responsive Design
+##  Responsive Design
 
 The application is fully responsive:
 
@@ -241,7 +241,7 @@ The application is fully responsive:
 - **Color contrast** meets WCAG AA standards
 - **Reduced motion** support for animations
 
-## 🚀 Getting Started
+##  Getting Started
 
 1. **Install and start the dev server** (see Installation & Commands above):
    `cd frontend && npm install && npm run dev`
@@ -250,7 +250,7 @@ The application is fully responsive:
 4. **Start your first session** from Dashboard or Study page
 5. **Complete the session** to see analytics
 
-## 📊 Understanding Metrics
+##  Understanding Metrics
 
 ### Focus Change
 Positive values indicate improved focus after the session.
@@ -261,7 +261,7 @@ Calculated as `pre-stress minus post-stress`. Positive values mean reduced stres
 ### Mood Change
 Positive values indicate improved mood after the session.
 
-## ⚠️ Important Notes
+##  Important Notes
 
 - All data is stored **locally** in your browser
 - No data is sent to any server
@@ -270,7 +270,7 @@ Positive values indicate improved mood after the session.
 - Metrics represent **self-reported personal patterns**, not scientific proof
 - Patterns become more reliable after multiple sessions (minimum 3 recommended)
 
-## 🎨 Customization
+##  Customization
 
 ### Changing Colors
 Edit CSS custom properties in `frontend/style.css` (legacy app):
@@ -292,7 +292,7 @@ Edit the `TASKS` array in `frontend/script.js` (legacy app) or `frontend/src/uti
 const TASKS = ['Reading', 'Writing', 'Problem solving', ...];
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Audio not playing
 - Check browser compatibility with Web Audio API
@@ -309,7 +309,7 @@ const TASKS = ['Reading', 'Writing', 'Problem solving', ...];
 - Ensure all files are loaded correctly
 - Try refreshing the page
 
-## 🔮 Future Enhancements
+##  Future Enhancements
 
 Potential features for future versions:
 - [ ] Pomodoro timer integration
@@ -321,11 +321,11 @@ Potential features for future versions:
 - [ ] Mobile app version
 - [ ] Cloud sync capability
 
-## 📝 License
+##  License
 
 This project is available for personal and educational use.
 
-## 🤝 Credits
+##  Credits
 
 - **Design inspiration**: Modern productivity apps
 - **Typography**: Bricolage Grotesque, DM Sans (Google Fonts)
