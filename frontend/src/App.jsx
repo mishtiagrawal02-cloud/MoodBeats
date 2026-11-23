@@ -9,6 +9,8 @@ import Study from './pages/Study';
 import AudioLibrary from './pages/AudioLibrary';
 import Sessions from './pages/Sessions';
 import Profile from './pages/Profile';
+import Login from './pages/Login';
+import AuthCallback from './pages/AuthCallback';
 import './styles/global.css';
 import './styles/components.css';
 import './styles/study.css';
@@ -34,6 +36,8 @@ function App() {
                   <Route path="/sessions" element={<Sessions />} />
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </Suspense>

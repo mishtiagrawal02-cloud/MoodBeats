@@ -89,4 +89,52 @@ describe('Authentication Tests', () => {
     assert.strictEqual(response.status, 401);
     assert.strictEqual(data.success, false);
   });
+
+  describe('Google OAuth Endpoints', () => {
+    it('should redirect to Google login or return error if not configured', async () => {
+      const response = await fetch(`${API_URL}/api/auth/google`, {
+        redirect: 'manual',
+      });
+
+      // If GOOGLE_CLIENT_ID is not configured, server returns 500 error;
+      // if configured, it returns 302 redirect to accounts.google.com
+      if (response.status === 302) {
+        const location = response.headers.get('location');
+        assert.ok(location?.includes('accounts.google.com'));
+        assert.ok(location?.includes('client_id='));
+      } else {
+        assert.ok([500, 302].includes(response.status));
+      }
+    });
+
+    it('should handle consent denied on callback with redirect to login', async () => {
+      const response = await fetch(`${API_URL}/api/auth/google/callback?error=access_denied`, {
+        redirect: 'manual',
+      });
+
+      assert.strictEqual(response.status, 302);
+      const location = response.headers.get('location');
+      assert.ok(location?.includes('/login?error=access_denied'));
+    });
+
+    it('should handle missing code/state on callback', async () => {
+      const response = await fetch(`${API_URL}/api/auth/google/callback`, {
+        redirect: 'manual',
+      });
+
+      assert.strictEqual(response.status, 302);
+      const location = response.headers.get('location');
+      assert.ok(location?.includes('/login?error=missing_callback_parameters'));
+    });
+
+    it('should reject invalid CSRF state on callback', async () => {
+      const response = await fetch(`${API_URL}/api/auth/google/callback?code=mock_code&state=forged_state`, {
+        redirect: 'manual',
+      });
+
+      assert.strictEqual(response.status, 302);
+      const location = response.headers.get('location');
+      assert.ok(location?.includes('/login?error=invalid_oauth_state'));
+    });
+  });
 });
