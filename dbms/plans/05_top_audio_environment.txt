@@ -1,0 +1,39 @@
+Limit  (cost=1819.90..1819.91 rows=1 width=54) (actual time=4.051..4.054 rows=1 loops=1)
+  Buffers: shared hit=711
+  ->  Sort  (cost=1819.90..1819.92 rows=6 width=54) (actual time=4.050..4.052 rows=1 loops=1)
+        Sort Key: (round(avg((COALESCE((post.focus)::integer, 5) - COALESCE((pre.focus)::integer, 5))), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=711
+        ->  GroupAggregate  (cost=5.91..1819.87 rows=6 width=54) (actual time=2.025..4.027 rows=3 loops=1)
+              Group Key: a.audio_id
+              Buffers: shared hit=708
+              ->  Nested Loop Left Join  (cost=5.91..1818.28 rows=100 width=18) (actual time=0.672..3.956 rows=100 loops=1)
+                    Buffers: shared hit=708
+                    ->  Nested Loop Left Join  (cost=5.62..1063.28 rows=100 width=24) (actual time=0.649..2.385 rows=100 loops=1)
+                          Buffers: shared hit=408
+                          ->  Nested Loop  (cost=5.33..324.28 rows=100 width=22) (actual time=0.634..0.752 rows=100 loops=1)
+                                Join Filter: ((s.audio_id)::text = (a.audio_id)::text)
+                                Rows Removed by Join Filter: 500
+                                Buffers: shared hit=108
+                                ->  Index Scan using audio_type_pkey on audio_type a  (cost=0.13..12.22 rows=6 width=14) (actual time=0.001..0.005 rows=6 loops=1)
+                                      Buffers: shared hit=2
+                                ->  Materialize  (cost=5.19..303.31 rows=100 width=14) (actual time=0.008..0.109 rows=100 loops=6)
+                                      Buffers: shared hit=106
+                                      ->  Bitmap Heap Scan on study_session s  (cost=5.19..302.81 rows=100 width=14) (actual time=0.046..0.587 rows=100 loops=1)
+                                            Recheck Cond: (user_id = 42)
+                                            Filter: (actual_minutes > 0)
+                                            Heap Blocks: exact=100
+                                            Buffers: shared hit=106
+                                            ->  Bitmap Index Scan on idx_study_session_user_timestamp  (cost=0.00..5.17 rows=100 width=0) (actual time=0.032..0.032 rows=100 loops=1)
+                                                  Index Cond: (user_id = 42)
+                                                  Buffers: shared hit=6
+                          ->  Index Scan using pre_check_in_pkey on pre_check_in pre  (cost=0.29..7.39 rows=1 width=10) (actual time=0.016..0.016 rows=1 loops=100)
+                                Index Cond: (session_id = s.session_id)
+                                Buffers: shared hit=300
+                    ->  Index Scan using post_check_in_pkey on post_check_in post  (cost=0.29..7.55 rows=1 width=10) (actual time=0.015..0.015 rows=1 loops=100)
+                          Index Cond: (session_id = s.session_id)
+                          Buffers: shared hit=300
+Planning:
+  Buffers: shared hit=457
+Planning Time: 3.044 ms
+Execution Time: 4.116 ms

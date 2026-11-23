@@ -1,0 +1,30 @@
+GroupAggregate  (cost=28.85..28.89 rows=1 width=48) (actual time=0.177..0.178 rows=1 loops=1)
+  Group Key: g.weekly_goal_minutes
+  Buffers: shared hit=17
+  ->  Sort  (cost=28.85..28.85 rows=2 width=8) (actual time=0.163..0.164 rows=2 loops=1)
+        Sort Key: g.weekly_goal_minutes
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=17
+        ->  Nested Loop Left Join  (cost=4.99..28.84 rows=2 width=8) (actual time=0.133..0.141 rows=2 loops=1)
+              Buffers: shared hit=14
+              ->  Nested Loop Left Join  (cost=0.55..16.60 rows=1 width=12) (actual time=0.075..0.076 rows=1 loops=1)
+                    Buffers: shared hit=9
+                    ->  Index Only Scan using users_pkey on users u  (cost=0.28..8.29 rows=1 width=8) (actual time=0.039..0.039 rows=1 loops=1)
+                          Index Cond: (user_id = 42)
+                          Heap Fetches: 1
+                          Buffers: shared hit=6
+                    ->  Index Scan using study_goal_pkey on study_goal g  (cost=0.28..8.29 rows=1 width=12) (actual time=0.034..0.034 rows=1 loops=1)
+                          Index Cond: (user_id = 42)
+                          Buffers: shared hit=3
+              ->  Bitmap Heap Scan on study_session s  (cost=4.44..12.22 rows=2 width=12) (actual time=0.053..0.059 rows=2 loops=1)
+                    Recheck Cond: ((user_id = 42) AND (session_timestamp >= (now() - '7 days'::interval)))
+                    Filter: (actual_minutes > 0)
+                    Heap Blocks: exact=2
+                    Buffers: shared hit=5
+                    ->  Bitmap Index Scan on idx_study_session_user_timestamp  (cost=0.00..4.44 rows=2 width=0) (actual time=0.036..0.036 rows=2 loops=1)
+                          Index Cond: ((user_id = 42) AND (session_timestamp >= (now() - '7 days'::interval)))
+                          Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=284
+Planning Time: 2.321 ms
+Execution Time: 0.356 ms

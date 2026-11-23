@@ -1,0 +1,24 @@
+Aggregate  (cost=1799.82..1799.84 rows=1 width=96) (actual time=3.585..3.586 rows=1 loops=1)
+  Buffers: shared hit=706
+  ->  Nested Loop Left Join  (cost=5.78..1796.81 rows=100 width=12) (actual time=0.175..3.508 rows=100 loops=1)
+        Buffers: shared hit=706
+        ->  Nested Loop Left Join  (cost=5.49..1041.81 rows=100 width=14) (actual time=0.081..1.959 rows=100 loops=1)
+              Buffers: shared hit=406
+              ->  Bitmap Heap Scan on study_session s  (cost=5.19..302.81 rows=100 width=8) (actual time=0.075..0.776 rows=100 loops=1)
+                    Recheck Cond: (user_id = 42)
+                    Filter: (actual_minutes > 0)
+                    Heap Blocks: exact=100
+                    Buffers: shared hit=106
+                    ->  Bitmap Index Scan on idx_study_session_user_timestamp  (cost=0.00..5.17 rows=100 width=0) (actual time=0.055..0.055 rows=100 loops=1)
+                          Index Cond: (user_id = 42)
+                          Buffers: shared hit=6
+              ->  Index Scan using pre_check_in_pkey on pre_check_in pre  (cost=0.29..7.39 rows=1 width=14) (actual time=0.011..0.011 rows=1 loops=100)
+                    Index Cond: (session_id = s.session_id)
+                    Buffers: shared hit=300
+        ->  Index Scan using post_check_in_pkey on post_check_in post  (cost=0.29..7.55 rows=1 width=14) (actual time=0.015..0.015 rows=1 loops=100)
+              Index Cond: (session_id = s.session_id)
+              Buffers: shared hit=300
+Planning:
+  Buffers: shared hit=336
+Planning Time: 2.492 ms
+Execution Time: 3.701 ms

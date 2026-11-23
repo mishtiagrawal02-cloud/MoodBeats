@@ -1,0 +1,14 @@
+Aggregate  (cost=303.06..303.08 rows=1 width=40) (actual time=0.727..0.727 rows=1 loops=1)
+  Buffers: shared hit=106
+  ->  Bitmap Heap Scan on study_session  (cost=5.19..302.81 rows=100 width=4) (actual time=0.087..0.704 rows=100 loops=1)
+        Recheck Cond: (user_id = 42)
+        Filter: (actual_minutes > 0)
+        Heap Blocks: exact=100
+        Buffers: shared hit=106
+        ->  Bitmap Index Scan on idx_study_session_user_timestamp  (cost=0.00..5.17 rows=100 width=0) (actual time=0.071..0.071 rows=100 loops=1)
+              Index Cond: (user_id = 42)
+              Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=126
+Planning Time: 0.947 ms
+Execution Time: 0.792 ms

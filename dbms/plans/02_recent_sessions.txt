@@ -1,0 +1,10 @@
+Limit  (cost=0.42..16.02 rows=4 width=20) (actual time=0.035..0.052 rows=4 loops=1)
+  Buffers: shared hit=10
+  ->  Index Scan Backward using idx_study_session_user_timestamp on study_session  (cost=0.42..390.41 rows=100 width=20) (actual time=0.035..0.051 rows=4 loops=1)
+        Index Cond: (user_id = 42)
+        Filter: (actual_minutes > 0)
+        Buffers: shared hit=10
+Planning:
+  Buffers: shared hit=156
+Planning Time: 0.958 ms
+Execution Time: 0.069 ms

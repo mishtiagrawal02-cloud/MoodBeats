@@ -1,0 +1,38 @@
+Sort  (cost=1897.73..1898.23 rows=200 width=52) (actual time=3.748..3.752 rows=7 loops=1)
+  Sort Key: (((generate_series((CURRENT_DATE - '6 days'::interval), (CURRENT_DATE)::timestamp without time zone, '1 day'::interval)))::date)
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=709
+  ->  HashAggregate  (cost=1887.09..1890.09 rows=200 width=52) (actual time=3.710..3.718 rows=7 loops=1)
+        Group Key: (((generate_series((CURRENT_DATE - '6 days'::interval), (CURRENT_DATE)::timestamp without time zone, '1 day'::interval)))::date)
+        Batches: 1  Memory Usage: 40kB
+        Buffers: shared hit=706
+        ->  Hash Right Join  (cost=48.30..1869.59 rows=1000 width=20) (actual time=0.630..3.679 rows=7 loops=1)
+              Hash Cond: (date(s.session_timestamp) = (((generate_series((CURRENT_DATE - '6 days'::interval), (CURRENT_DATE)::timestamp without time zone, '1 day'::interval)))::date))
+              Buffers: shared hit=706
+              ->  Nested Loop Left Join  (cost=5.78..1796.81 rows=100 width=24) (actual time=0.082..3.591 rows=100 loops=1)
+                    Buffers: shared hit=706
+                    ->  Nested Loop Left Join  (cost=5.49..1041.81 rows=100 width=22) (actual time=0.072..2.201 rows=100 loops=1)
+                          Buffers: shared hit=406
+                          ->  Bitmap Heap Scan on study_session s  (cost=5.19..302.81 rows=100 width=20) (actual time=0.066..0.834 rows=100 loops=1)
+                                Recheck Cond: (user_id = 42)
+                                Filter: (actual_minutes > 0)
+                                Heap Blocks: exact=100
+                                Buffers: shared hit=106
+                                ->  Bitmap Index Scan on idx_study_session_user_timestamp  (cost=0.00..5.17 rows=100 width=0) (actual time=0.052..0.052 rows=100 loops=1)
+                                      Index Cond: (user_id = 42)
+                                      Buffers: shared hit=6
+                          ->  Index Scan using pre_check_in_pkey on pre_check_in pre  (cost=0.29..7.39 rows=1 width=10) (actual time=0.013..0.013 rows=1 loops=100)
+                                Index Cond: (session_id = s.session_id)
+                                Buffers: shared hit=300
+                    ->  Index Scan using post_check_in_pkey on post_check_in post  (cost=0.29..7.55 rows=1 width=10) (actual time=0.013..0.013 rows=1 loops=100)
+                          Index Cond: (session_id = s.session_id)
+                          Buffers: shared hit=300
+              ->  Hash  (cost=30.03..30.03 rows=1000 width=4) (actual time=0.025..0.026 rows=7 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    ->  Result  (cost=0.00..30.03 rows=1000 width=4) (actual time=0.017..0.020 rows=7 loops=1)
+                          ->  ProjectSet  (cost=0.00..5.03 rows=1000 width=8) (actual time=0.017..0.018 rows=7 loops=1)
+                                ->  Result  (cost=0.00..0.01 rows=1 width=0) (actual time=0.001..0.001 rows=1 loops=1)
+Planning:
+  Buffers: shared hit=352
+Planning Time: 3.438 ms
+Execution Time: 3.930 ms
